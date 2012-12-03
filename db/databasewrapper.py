@@ -20,7 +20,9 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
             duration = stop - start
             sql = self.db.ops.last_executed_query(self.cursor, sql, params)
             stack = traceback.extract_stack()
-            SqlQueries.record_query_details(sql, duration, stack)
+            instance = SqlQueries.instance()
+            if instance:
+                instance.record_query_details(sql, duration, stack)
 
     def executemany(self, sql, param_list):
         self.set_dirty()
@@ -35,7 +37,9 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
             except TypeError:           # param_list could be an iterator
                 times = None
             stack = traceback.extract_stack()
-            SqlQueries.record_query_details(sql, duration, stack, times)
+            instance = SqlQueries.instance()
+            if instance:
+                instance.record_query_details(sql, duration, stack, times)
 
 
 class DatabaseWrapper(wrappedbackend.DatabaseWrapper):

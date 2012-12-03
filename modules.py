@@ -2,6 +2,29 @@ from celery.signals import task_sent
 import time
 import os
 
+try:
+    from greenlet import getcurrent as get_ident
+except ImportError:
+    from thread import get_ident
+
+class ThreadLocalSingleton(object):
+    def __init__(self):
+        if not hasattr(self.__class__, '_thread_lookup'):
+            self.__class__._thread_lookup = dict()
+        self.__class__._thread_lookup[get_ident()] = self
+
+    def release(self):
+        thread_id = get_ident()
+        if self.__class_._thread_lookup[thread_id] == self:
+            del self.__class_._thread_lookup[thread_id]
+
+    @classmethod
+    def instance(cls):
+        if hasattr(cls, '_thread_lookup'):
+            return cls._thread_lookup.get(get_ident())
+
+
+
 class PageTimer(object):
     key = 'overall'
 
@@ -20,13 +43,12 @@ class HostInformation(object):
         return {'name': os.uname()[1]}
 
 
-class SqlQueries(object):
+class SqlQueries(ThreadLocalSingleton):
     key = 'sql'
 
-    queries = []
-
     def __init__(self):
-        self.__class__.queries = []
+        super(SqlQueries, self).__init__()
+        self.queries = []
 
     def get_metrics(self):
         return {
@@ -37,22 +59,19 @@ class SqlQueries(object):
     def get_details(self):
         return [{'sql': query['sql'], 'time': query['time'], 'count': query['count']} for query in self.queries ]
 
-    @classmethod
-    def record_query_details(cls, sql, time, backtrace, count=1):
-        cls.queries.append({'sql': sql, 'time': time, 'backtrace': backtrace, 'count': count})
+    def record_query_details(self, sql, time, backtrace, count=1):
+        self.queries.append({'sql': sql, 'time': time, 'backtrace': backtrace, 'count': count})
 
 
-class CeleryJobs(object):
+class CeleryJobs(ThreadLocalSingleton):
     key = 'celery'
 
-    jobs = []
-
     def __init__(self):
-        self.__class__.jobs = []
+        super(CeleryJobs, self).__init__()
+        self.jobs = []
 
-    @classmethod
-    def celery_task_sent(cls, sender, **kwargs):
-        cls.jobs.append({
+    def celery_task_sent(self, sender, **kwargs):
+        self.jobs.append({
             'name': kwargs['task'],
             'args': kwargs['args'],
             'kwargs': kwargs['kwargs'],
@@ -69,4 +88,6 @@ class CeleryJobs(object):
 
 @task_sent.connect(dispatch_uid='celery_task_sent_speedbar')
 def celery_task_sent(sender, **kwargs):
-    CeleryJobs.celery_task_sent(sender, **kwargs)
+    instance = CeleryJobs.instance()
+    if instance:
+        instance.celery_task_sent(sender, **kwargs)
