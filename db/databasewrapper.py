@@ -44,6 +44,6 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
 
 class DatabaseWrapper(wrappedbackend.DatabaseWrapper):
     def cursor(self, *args, **kwargs):
-        cursor = super(DatabaseWrapper, self).cursor(*args, **kwargs)
+        cursor = wrappedbackend.DatabaseWrapper.cursor(self, *args, **kwargs)
         return _DetailedTracingCursorWrapper(cursor, self)
 

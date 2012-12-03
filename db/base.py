@@ -1,3 +1,4 @@
+#pylint: disable=W0611
 from mixcloud.speedbar.db.databasewrapper import wrappedbackend, DatabaseWrapper
 
 # Import everything except DatabaseWrapper from the wrapped backend

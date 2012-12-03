@@ -1,4 +1,3 @@
-from django.utils.encoding import smart_unicode
 from mixcloud.speedbar import modules
 import json
 import re
