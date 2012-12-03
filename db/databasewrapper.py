@@ -1,6 +1,6 @@
 from django.db.backends.util import CursorWrapper
 from django.db.utils import load_backend
-from mixcloud.speedbar.middleware import SpeedbarMiddleware
+from mixcloud.speedbar.modules import SqlQueries
 from django.conf import settings
 
 from time import time
@@ -20,7 +20,7 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
             duration = stop - start
             sql = self.db.ops.last_executed_query(self.cursor, sql, params)
             stack = traceback.extract_stack()
-            SpeedbarMiddleware.record_query_details(sql, duration, stack)
+            SqlQueries.record_query_details(sql, duration, stack)
 
     def executemany(self, sql, param_list):
         self.set_dirty()
@@ -35,7 +35,7 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
             except TypeError:           # param_list could be an iterator
                 times = None
             stack = traceback.extract_stack()
-            SpeedbarMiddleware.record_query_details(sql, duration, stack, times)
+            SqlQueries.record_query_details(sql, duration, stack, times)
 
 
 class DatabaseWrapper(wrappedbackend.DatabaseWrapper):

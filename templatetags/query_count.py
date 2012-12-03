@@ -14,3 +14,11 @@ def query_time():
 @register.simple_tag
 def query_details_script():
     return '<script id="query_details_script"></script>'
+
+@register.simple_tag
+def metric(module, metric):
+    return '<span data-module="%s" data-metric="%s"></span>' % (module, metric)
+
+@register.simple_tag
+def detail_json():
+    return '<script data-speedbar-details-placeholder></script>'
