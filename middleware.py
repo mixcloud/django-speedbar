@@ -3,7 +3,7 @@ from mixcloud.speedbar import modules
 import json
 import re
 
-ACTIVE_MODULES = [modules.PageTimer, modules.HostInformation, modules.SqlQueries]
+ACTIVE_MODULES = [modules.PageTimer, modules.HostInformation, modules.SqlQueries, modules.CeleryJobs]
 
 HTML_TYPES = ('text/html', 'application/xhtml+xml')
 
@@ -24,7 +24,7 @@ class SpeedbarMiddleware(object):
             for key, value in module_values.items():
                 response['X-Mixcloud-%s-%s' % (sanitize(module), sanitize(key))] = value
 
-        if request.user.is_staff:
+        if hasattr(request, 'user') and request.user.is_staff:
             if 'gzip' not in response.get('Content-Encoding', '') and response.get('Content-Type', '').split(';')[0] in HTML_TYPES:
                 all_details = json.dumps(dict(
                     (key, module.get_details()) for key, module in request._speedbar_modules.items() if hasattr(module, 'get_details')

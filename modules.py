@@ -1,3 +1,4 @@
+from celery.signals import task_sent
 import time
 import os
 
@@ -39,3 +40,33 @@ class SqlQueries(object):
     @classmethod
     def record_query_details(cls, sql, time, backtrace, count=1):
         cls.queries.append({'sql': sql, 'time': time, 'backtrace': backtrace, 'count': count})
+
+
+class CeleryJobs(object):
+    key = 'celery'
+
+    jobs = []
+
+    def __init__(self):
+        self.__class__.jobs = []
+
+    @classmethod
+    def celery_task_sent(cls, sender, **kwargs):
+        cls.jobs.append({
+            'name': kwargs['task'],
+            'args': kwargs['args'],
+            'kwargs': kwargs['kwargs'],
+            })
+
+    def get_metrics(self):
+        return {
+            'count' : len(self.jobs),
+            }
+
+    def get_details(self):
+        return self.jobs
+
+
+@task_sent.connect(dispatch_uid='celery_task_sent_speedbar')
+def celery_task_sent(sender, **kwargs):
+    CeleryJobs.celery_task_sent(sender, **kwargs)
