@@ -1,6 +1,7 @@
 from mixcloud.speedbar import modules
 import json
 import re
+from django.utils.encoding import smart_unicode, smart_str
 
 ACTIVE_MODULES = [modules.PageTimer, modules.HostInformation, modules.SqlQueries, modules.CeleryJobs]
 
@@ -29,15 +30,19 @@ class SpeedbarMiddleware(object):
                     (key, module.get_details()) for key, module in request._speedbar_modules.items() if hasattr(module, 'get_details')
                 ))
 
+                content = smart_unicode(response.content)
+
                 def replace_placeholder(match):
                     module = match.group('module')
                     metric = match.group('metric')
                     return unicode(metrics[module][metric])
-                response.content = METRIC_PLACEHOLDER_RE.sub(replace_placeholder, response.content)
+                content = METRIC_PLACEHOLDER_RE.sub(replace_placeholder, content)
 
-                response.content = response.content.replace(
+                content = content.replace(
                     u'<script data-speedbar-details-placeholder></script>',
                     u'<script>var _speedbar_details = %s;</script>' % (all_details,))
+
+                response.content = smart_str(content)
 
                 if response.get('Content-Length', None):
                     response['Content-Length'] = len(response.content)
