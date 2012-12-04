@@ -1,7 +1,10 @@
 from mixcloud.speedbar import modules
+
+from django.utils.encoding import smart_unicode, smart_str
+from django.conf import settings
+
 import json
 import re
-from django.utils.encoding import smart_unicode, smart_str
 
 ACTIVE_MODULES = [modules.PageTimer, modules.HostInformation, modules.SqlQueries, modules.CeleryJobs]
 
@@ -38,9 +41,10 @@ class SpeedbarMiddleware(object):
                     return unicode(metrics[module][metric])
                 content = METRIC_PLACEHOLDER_RE.sub(replace_placeholder, content)
 
-                content = content.replace(
-                    u'<script data-speedbar-details-placeholder></script>',
-                    u'<script>var _speedbar_details = %s;</script>' % (all_details,))
+                if settings.DEBUG:
+                    content = content.replace(
+                        u'<script data-speedbar-details-placeholder></script>',
+                        u'<script>var _speedbar_details = %s;</script>' % (all_details,))
 
                 response.content = smart_str(content)
 
