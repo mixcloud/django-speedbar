@@ -31,7 +31,7 @@ class SpeedbarMiddleware(object):
             if 'gzip' not in response.get('Content-Encoding', '') and response.get('Content-Type', '').split(';')[0] in HTML_TYPES:
                 all_details = json.dumps(dict(
                     (key, module.get_details()) for key, module in request._speedbar_modules.items() if hasattr(module, 'get_details')
-                ))
+                ), skipkeys=True, default=repr)
 
                 content = smart_unicode(response.content)
 
