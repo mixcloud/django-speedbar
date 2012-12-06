@@ -4,9 +4,7 @@ from django.conf import settings
 from mixcloud.utils.decorators import staff_only
 from mixcloud.speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX
 
-
 import json
-import time
 
 @staff_only
 def panel(request, trace_id):

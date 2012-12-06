@@ -1,12 +1,13 @@
+from __future__ import absolute_import
+from .base import Module
+
 import time
 
-from mixcloud.speedbar.modules import Module
-
-class StackRecorder(Module):
+class StackTracer(Module):
     key = 'stackrecorder'
 
     def __init__(self):
-        super(StackRecorder, self).__init__()
+        super(StackTracer, self).__init__()
         self.root = None
         self.stack = []
         self.stack_id = 0

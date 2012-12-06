@@ -1,14 +1,12 @@
-from mixcloud.speedbar.speedtracer import StackRecorder
-from mixcloud.speedbar.modules import RequestTrace
+from mixcloud.speedbar.modules.stacktracer import StackTracer
+from mixcloud.speedbar.modules import RequestTrace, StackTracer
 
 from django.utils.encoding import smart_unicode, smart_str
-from django.utils.html import escape, escapejs
+from django.utils.html import escapejs
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-import json
 import re
-from uuid import uuid4
 
 HTML_TYPES = ('text/html', 'application/xhtml+xml')
 
@@ -16,7 +14,7 @@ METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-m
 
 class SpeedbarMiddleware(object):
     def process_request(self, request):
-        StackRecorder.instance().root['operation']['label'] = '%s %s' % (request.method, request.path)
+        StackTracer.instance().root['operation']['label'] = '%s %s' % (request.method, request.path)
 
     def process_response(self, request, response):
         request_trace = RequestTrace.instance()
