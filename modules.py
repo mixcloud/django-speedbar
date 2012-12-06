@@ -1,6 +1,7 @@
 from celery.signals import task_sent
 import time
 import os
+from uuid import uuid4
 
 try:
     from greenlet import getcurrent as get_ident
@@ -26,8 +27,23 @@ class ThreadLocalSingleton(object):
         return cls._thread_lookup[thread_id]
 
 
+class RequestTrace(ThreadLocalSingleton):
+    def __init__(self, modules=[]):
+        super(RequestTrace, self).__init__()
+        self.id = str(uuid4())
+        self.modules = dict((m.key, m) for m in modules)
 
-class PageTimer(object):
+
+class Module(object):
+    @classmethod
+    def instance(cls):
+        request_trace = RequestTrace.instance()
+        if cls.key not in request_trace.modules:
+            request_trace.modules[cls.key] = cls()
+        return request_trace.modules.get(cls.key) or cls()
+
+
+class PageTimer(Module):
     key = 'overall'
 
     def __init__(self):
@@ -38,14 +54,14 @@ class PageTimer(object):
         return { 'time' : render_time }
 
 
-class HostInformation(object):
+class HostInformation(Module):
     key = 'host'
 
     def get_metrics(self):
         return {'name': os.uname()[1]}
 
 
-class SqlQueries(ThreadLocalSingleton):
+class SqlQueries(Module):
     key = 'sql'
 
     def __init__(self):
@@ -65,7 +81,7 @@ class SqlQueries(ThreadLocalSingleton):
         self.queries.append({'sql': sql, 'time': time, 'backtrace': backtrace, 'count': count})
 
 
-class CeleryJobs(ThreadLocalSingleton):
+class CeleryJobs(Module):
     key = 'celery'
 
     def __init__(self):

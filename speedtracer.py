@@ -1,8 +1,8 @@
 import time
 
-from mixcloud.speedbar.modules import ThreadLocalSingleton
+from mixcloud.speedbar.modules import Module
 
-class StackRecorder(ThreadLocalSingleton):
+class StackRecorder(Module):
     key = 'stackrecorder'
 
     def __init__(self):
@@ -37,7 +37,7 @@ class StackRecorder(ThreadLocalSingleton):
     def get_metrics(self):
         return {}
 
-    def speedtracer_log(self, trace_id):
+    def speedtracer_log(self):
         return {
             'trace': {
                 'id': str(self.stack_id),
