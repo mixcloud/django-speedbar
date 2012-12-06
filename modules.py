@@ -109,3 +109,12 @@ def celery_task_sent(sender, **kwargs):
     instance = CeleryJobs.instance()
     if instance:
         instance.celery_task_sent(sender, **kwargs)
+
+
+def monkey_patch():
+    from django.core.handlers.base import BaseHandler
+    load_middleware = BaseHandler.load_middleware
+    def replacement_load_middleware(self, *args, **kwargs):
+        print "Loading middleware BWAHAHAHAHAHAHAHA"
+        return load_middleware(self, *args, **kwargs)
+    BaseHandler.load_middleware = replacement_load_middleware
