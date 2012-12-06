@@ -7,4 +7,4 @@ from .pagetimer import PageTimer
 from .hostinformation import HostInformation
 from .celeryjobs import CeleryJobs
 
-from .middleware import monkey_patch
+from .requeststages import monkey_patch
