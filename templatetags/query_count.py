@@ -20,5 +20,5 @@ def metric(module, metric):
     return '<span data-module="%s" data-metric="%s"></span>' % (module, metric)
 
 @register.simple_tag
-def detail_json():
-    return '<script data-speedbar-details-placeholder></script>'
+def speedbar_script():
+    return '<script data-speedbar-panel-url-placeholder></script>'

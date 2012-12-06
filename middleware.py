@@ -1,12 +1,17 @@
 from mixcloud.speedbar import modules
 
 from django.utils.encoding import smart_unicode, smart_str
+from django.utils.html import escape, escapejs
 from django.conf import settings
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
 
 import json
 import re
+from uuid import uuid4
 
 ACTIVE_MODULES = [modules.PageTimer, modules.HostInformation, modules.SqlQueries, modules.CeleryJobs]
+DETAILS_CACHE_TIME = 60 * 30 # 30 minutes
 
 HTML_TYPES = ('text/html', 'application/xhtml+xml')
 
@@ -29,9 +34,11 @@ class SpeedbarMiddleware(object):
 
         if hasattr(request, 'user') and request.user.is_staff:
             if 'gzip' not in response.get('Content-Encoding', '') and response.get('Content-Type', '').split(';')[0] in HTML_TYPES:
-                all_details = json.dumps(dict(
+                all_details = dict(
                     (key, module.get_details()) for key, module in request._speedbar_modules.items() if hasattr(module, 'get_details')
-                ), skipkeys=True, default=repr)
+                )
+                pageload_uuid = str(uuid4())
+                cache.set(pageload_uuid, all_details, DETAILS_CACHE_TIME)
 
                 # Force render of response (from lazy TemplateResponses) before speedbar is injected
                 if hasattr(response, 'render'):
@@ -45,9 +52,10 @@ class SpeedbarMiddleware(object):
                 content = METRIC_PLACEHOLDER_RE.sub(replace_placeholder, content)
 
                 if settings.DEBUG:
+                    panel_url = reverse('speedbar_panel', args=[pageload_uuid])
                     content = content.replace(
-                        u'<script data-speedbar-details-placeholder></script>',
-                        u'<script>var _speedbar_details = %s;</script>' % (all_details,))
+                        u'<script data-speedbar-panel-url-placeholder></script>',
+                        u'<script>var _speedbar_panel_url = "%s";</script>' % (escapejs(panel_url),))
 
                 response.content = smart_str(content)
 
