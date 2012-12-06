@@ -20,8 +20,10 @@ class ThreadLocalSingleton(object):
 
     @classmethod
     def instance(cls):
-        if hasattr(cls, '_thread_lookup'):
-            return cls._thread_lookup.get(get_ident())
+        thread_id = get_ident()
+        if not hasattr(cls, '_thread_lookup') or thread_id not in cls._thread_lookup:
+            cls()
+        return cls._thread_lookup[thread_id]
 
 
 
