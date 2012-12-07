@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 
 from django.core import urlresolvers
+from django.template.base import Template
+from django.template.response import TemplateResponse
 from django.core.handlers.base import BaseHandler
 
 from .stacktracer import StackTracer
@@ -14,7 +16,7 @@ def monkeypatch_method(cls):
         original = getattr(cls, func.__name__)
         # We can't use partial as it doesn't return a real function
         def replacement(self, *args, **kwargs):
-            func(original, self, *args, **kwargs)
+            return func(original, self, *args, **kwargs)
         setattr(cls, func.__name__, replacement)
         return func
     return decorator
@@ -49,8 +51,14 @@ def copymodule(old):
     return new
 
 
+have_monkey_patched = False
 
 def monkey_patch():
+    global have_monkey_patched
+    if have_monkey_patched:
+        return
+    have_monkey_patched = True
+
     @monkeypatch_method(BaseHandler)
     def load_middleware(original, self, *args, **kwargs):
         original(self, *args, **kwargs)
@@ -83,3 +91,31 @@ def monkey_patch():
             callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
             return callbacks
     urlresolvers.RegexURLResolver = ProxyRegexURLResolver
+
+    @monkeypatch_method(Template)
+    def __init__(original, self, *args, **kwargs):
+        name = args[2] if len(args) >= 3 else '<Unknown Template>'
+        stack_tracer = StackTracer.instance()
+        stack_tracer.push_stack('TEMPLATE_COMPILE', 'Compile template: ' + name)
+        try:
+            original(self, *args, **kwargs)
+        finally:
+            stack_tracer.pop_stack()
+
+    @monkeypatch_method(Template)
+    def render(original, self, *args, **kwargs):
+        stack_tracer = StackTracer.instance()
+        stack_tracer.push_stack('TEMPLATE_RENDER', 'Render template: ' + self.name)
+        try:
+            return original(self, *args, **kwargs)
+        finally:
+            stack_tracer.pop_stack()
+
+    @monkeypatch_method(TemplateResponse)
+    def resolve_context(original, self, *args, **kwargs):
+        stack_tracer = StackTracer.instance()
+        stack_tracer.push_stack('TEMPLATE_CONTEXT', 'Resolve context')
+        try:
+            return original(self, *args, **kwargs)
+        finally:
+            stack_tracer.pop_stack()
