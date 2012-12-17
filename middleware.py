@@ -14,7 +14,7 @@ METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-m
 
 class SpeedbarMiddleware(object):
     def process_request(self, request):
-        StackTracer.instance().root['operation']['label'] = '%s %s' % (request.method, request.path)
+        StackTracer.instance().root.label = '%s %s' % (request.method, request.path)
 
     def process_response(self, request, response):
         request_trace = RequestTrace.instance()
