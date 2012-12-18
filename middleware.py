@@ -33,6 +33,9 @@ class SpeedbarMiddleware(object):
                     (key, module.get_details()) for key, module in request._speedbar_modules.items() if hasattr(module, 'get_details')
                 ), skipkeys=True, default=repr)
 
+                # Force render of response (from lazy TemplateResponses) before speedbar is injected
+                if hasattr(response, 'render'):
+                    response.render()
                 content = smart_unicode(response.content)
 
                 def replace_placeholder(match):
