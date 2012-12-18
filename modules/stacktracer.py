@@ -4,8 +4,9 @@ from .base import Module
 import time
 
 class StackEntry(object):
-    def __init__(self, entry_id, entry_type, label):
-        self.entry_id = entry_id
+    def __init__(self, id_generator, entry_type, label):
+        self.id_generator = id_generator()
+        self.entry_id = id_generator()
         self.entry_type = entry_type
         self.label = label
         self.start = int(time.time()*1000)
@@ -14,8 +15,10 @@ class StackEntry(object):
     def end(self):
         self.end = int(time.time()*1000)
 
-    def add_child(self, child):
+    def add_child(self, entry_type, label):
+        child = StackEntry(self.id_generator, entry_type, label)
         self.children.append(child)
+        return child
 
     def to_dict(self):
         return {
@@ -41,14 +44,12 @@ class StackTracer(Module):
         self.root = None
         self.stack = []
         self.stack_id = 0
-
-    def push_stack(self, action_type, label):
-        entry = StackEntry(self.stack_id, action_type, label)
-        self.stack_id += 1
+        
+    def push_stack(self, entry_type, label):
         if len(self.stack):
-            self.stack[-1].add_child(entry)
+            entry = self.stack[-1].add_child(entry_type, label)
         else:
-            self.root = entry
+            entry = self.root = StackEntry(self._get_next_id, entry_type, label)
         self.stack.append(entry)
         return entry
 
@@ -70,3 +71,7 @@ class StackTracer(Module):
                 'frameStack': entries_as_dict,
             }
         }
+
+    def _get_next_id(self):
+        self.stack_id += 1
+        return self.stack_id
