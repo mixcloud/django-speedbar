@@ -5,14 +5,14 @@ import time
 
 class StackEntry(object):
     def __init__(self, id_generator, entry_type, label):
-        self.id_generator = id_generator()
+        self.id_generator = id_generator
         self.entry_id = id_generator()
         self.entry_type = entry_type
         self.label = label
         self.start = int(time.time()*1000)
         self.children = []
 
-    def end(self):
+    def mark_end(self):
         self.end = int(time.time()*1000)
 
     def add_child(self, entry_type, label):
@@ -54,7 +54,7 @@ class StackTracer(Module):
         return entry
 
     def pop_stack(self):
-        self.stack[-1].end()
+        self.stack[-1].mark_end()
         self.stack.pop()
 
     def get_metrics(self):
