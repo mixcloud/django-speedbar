@@ -1,6 +1,7 @@
 from django.db.backends.util import CursorWrapper
 from django.db.utils import load_backend
-from mixcloud.speedbar.modules import SqlQueries, StackTracer
+from mixcloud.speedbar.modules.stacktracer import StackTracer
+from mixcloud.speedbar.modules.sqlqueries import Module as SqlQueries
 from django.conf import settings
 
 from time import time

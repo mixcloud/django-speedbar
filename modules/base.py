@@ -31,7 +31,7 @@ class RequestTrace(ThreadLocalSingleton):
         self.modules = dict((m.key, m) for m in modules)
 
 
-class Module(object):
+class BaseModule(object):
     @classmethod
     def instance(cls):
         request_trace = RequestTrace.instance()

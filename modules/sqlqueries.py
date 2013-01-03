@@ -1,12 +1,12 @@
 from __future__ import absolute_import
-from .base import Module
+from .base import BaseModule
 
 
-class SqlQueries(Module):
+class Module(BaseModule):
     key = 'sql'
 
     def __init__(self):
-        super(SqlQueries, self).__init__()
+        super(Module, self).__init__()
         self.queries = []
 
     def get_metrics(self):

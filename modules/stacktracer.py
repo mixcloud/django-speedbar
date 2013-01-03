@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .base import Module
+from .base import BaseModule
 
 import time
 
@@ -36,7 +36,7 @@ class StackEntry(object):
         }
 
 
-class StackTracer(Module):
+class StackTracer(BaseModule):
     key = 'stackrecorder'
 
     def __init__(self):
@@ -75,3 +75,5 @@ class StackTracer(Module):
     def _get_next_id(self):
         self.stack_id += 1
         return self.stack_id
+
+Module = StackTracer

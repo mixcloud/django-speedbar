@@ -1,13 +1,13 @@
 from __future__ import absolute_import
-from .base import Module
+from .base import BaseModule
 
 from celery.signals import task_sent
 
-class CeleryJobs(Module):
+class Module(BaseModule):
     key = 'celery'
 
     def __init__(self):
-        super(CeleryJobs, self).__init__()
+        super(Module, self).__init__()
         self.jobs = []
 
     def celery_task_sent(self, sender, **kwargs):
@@ -25,9 +25,10 @@ class CeleryJobs(Module):
     def get_details(self):
         return self.jobs
 
-@task_sent.connect(dispatch_uid='celery_task_sent_speedbar')
 def celery_task_sent(sender, **kwargs):
     instance = CeleryJobs.instance()
     if instance:
         instance.celery_task_sent(sender, **kwargs)
 
+def init():
+    task_sent.connect(celery_task_sent, dispatch_uid='celery_task_sent_speedbar')

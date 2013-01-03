@@ -53,7 +53,7 @@ def copymodule(old):
 
 have_monkey_patched = False
 
-def monkey_patch():
+def init():
     global have_monkey_patched
     if have_monkey_patched:
         return

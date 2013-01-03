@@ -1,5 +1,5 @@
 from mixcloud.speedbar.modules.stacktracer import StackTracer
-from mixcloud.speedbar.modules import RequestTrace, StackTracer
+from mixcloud.speedbar.modules.base import RequestTrace
 
 from django.utils.encoding import smart_unicode, smart_str
 from django.utils.html import escapejs
