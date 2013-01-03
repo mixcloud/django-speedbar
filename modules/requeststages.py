@@ -6,21 +6,10 @@ from django.template.response import TemplateResponse
 from django.core.handlers.base import BaseHandler
 
 from .base import RequestTrace
-
+from .monkey_patching import monkeypatch_method
 
 from functools import wraps
 import traceback
-
-
-def monkeypatch_method(cls):
-    def decorator(func):
-        original = getattr(cls, func.__name__)
-        # We can't use partial as it doesn't return a real function
-        def replacement(self, *args, **kwargs):
-            return func(original, self, *args, **kwargs)
-        setattr(cls, func.__name__, replacement)
-        return func
-    return decorator
 
 
 def trace(function, action_type, label):

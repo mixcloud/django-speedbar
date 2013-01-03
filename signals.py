@@ -16,7 +16,7 @@ def store_request_trace(sender, **kwargs):
     all_details = dict(
         (key, module.get_details()) for key, module in request_trace.modules.items() if hasattr(module, 'get_details')
     )
-    cache.set(DETAILS_PREFIX + request_trace.id, all_details, DETAILS_CACHE_TIME)
-
     speedtracer_log = request_trace.stacktracer.speedtracer_log()
+
+    cache.set(DETAILS_PREFIX + request_trace.id, all_details, DETAILS_CACHE_TIME)
     cache.set(TRACE_PREFIX + request_trace.id, speedtracer_log, DETAILS_CACHE_TIME)

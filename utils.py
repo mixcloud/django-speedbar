@@ -12,6 +12,7 @@ SPEEDBAR_MODULES = [
     'mixcloud.speedbar.modules.stacktracer',
     'mixcloud.speedbar.modules.requeststages',
     'mixcloud.speedbar.modules.redis',
+    'mixcloud.speedbar.modules.memcache',
 ]
 
 loaded_modules = [import_module(m) for m in getattr(settings, 'SPEEDBAR_MODULES', SPEEDBAR_MODULES)]
