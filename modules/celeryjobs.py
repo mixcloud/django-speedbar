@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .base import BaseModule
+from .base import BaseModule, RequestTrace
 
 from celery.signals import task_sent
 
