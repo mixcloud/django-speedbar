@@ -10,6 +10,7 @@ SPEEDBAR_MODULES = [
     'mixcloud.speedbar.modules.sqlqueries',
     'mixcloud.speedbar.modules.celeryjobs',
     'mixcloud.speedbar.modules.stacktracer',
+    'mixcloud.speedbar.modules.requeststages',
 ]
 
 loaded_modules = [import_module(m) for m in getattr(settings, 'SPEEDBAR_MODULES', SPEEDBAR_MODULES)]

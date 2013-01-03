@@ -37,7 +37,7 @@ class StackEntry(object):
 
 
 class StackTracer(BaseModule):
-    key = 'stackrecorder'
+    key = 'stacktracer'
 
     def __init__(self):
         super(StackTracer, self).__init__()

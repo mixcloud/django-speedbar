@@ -29,12 +29,7 @@ class RequestTrace(ThreadLocalSingleton):
         super(RequestTrace, self).__init__()
         self.id = str(uuid4())
         self.modules = dict((m.key, m) for m in modules)
-
+        self.__dict__.update(self.modules)
 
 class BaseModule(object):
-    @classmethod
-    def instance(cls):
-        request_trace = RequestTrace.instance()
-        if cls.key not in request_trace.modules:
-            request_trace.modules[cls.key] = cls()
-        return request_trace.modules.get(cls.key) or cls()
+    pass

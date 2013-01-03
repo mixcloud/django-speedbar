@@ -5,7 +5,8 @@ from django.template.base import Template
 from django.template.response import TemplateResponse
 from django.core.handlers.base import BaseHandler
 
-from .stacktracer import StackTracer
+from .base import RequestTrace
+
 
 from functools import wraps
 import traceback
@@ -25,12 +26,12 @@ def monkeypatch_method(cls):
 def trace(function, action_type, label):
     @wraps(function)
     def wrapper(*args, **kwargs):
-        stack_tracer = StackTracer.instance()
-        stack_tracer.push_stack(action_type, label)
+        stacktracer = RequestTrace.instance().stacktracer
+        stacktracer.push_stack(action_type, label)
         try:
             return function(*args, **kwargs)
         finally:
-            stack_tracer.pop_stack()
+            stacktracer.pop_stack()
     return wrapper
 
 def patch_function_list(functions, action_type, format_string):
@@ -51,13 +52,9 @@ def copymodule(old):
     return new
 
 
-have_monkey_patched = False
-
 def init():
-    global have_monkey_patched
-    if have_monkey_patched:
-        return
-    have_monkey_patched = True
+    # The linter thinks the methods we monkeypatch are not used
+    # pylint: disable=W0612
 
     @monkeypatch_method(BaseHandler)
     def load_middleware(original, self, *args, **kwargs):
@@ -82,7 +79,7 @@ def init():
         def __getattr__(self, attr):
             return getattr(self.other, attr)
         def resolve(self, path):
-            stack_tracer = StackTracer.instance()
+            stack_tracer = RequestTrace.instance().stacktracer
             stack_tracer.push_stack('RESOLV', 'Resolving: ' + path)
             try:
                 callbacks = self.other.resolve(path)
@@ -95,7 +92,7 @@ def init():
     @monkeypatch_method(Template)
     def __init__(original, self, *args, **kwargs):
         name = args[2] if len(args) >= 3 else '<Unknown Template>'
-        stack_tracer = StackTracer.instance()
+        stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('TEMPLATE_COMPILE', 'Compile template: ' + name)
         try:
             original(self, *args, **kwargs)
@@ -104,7 +101,7 @@ def init():
 
     @monkeypatch_method(Template)
     def render(original, self, *args, **kwargs):
-        stack_tracer = StackTracer.instance()
+        stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('TEMPLATE_RENDER', 'Render template: ' + self.name)
         try:
             return original(self, *args, **kwargs)
@@ -113,7 +110,7 @@ def init():
 
     @monkeypatch_method(TemplateResponse)
     def resolve_context(original, self, *args, **kwargs):
-        stack_tracer = StackTracer.instance()
+        stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('TEMPLATE_CONTEXT', 'Resolve context')
         try:
             return original(self, *args, **kwargs)

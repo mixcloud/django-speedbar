@@ -1,4 +1,3 @@
-from mixcloud.speedbar.modules.stacktracer import StackTracer
 from mixcloud.speedbar.modules.base import RequestTrace
 
 from django.utils.encoding import smart_unicode, smart_str
@@ -14,7 +13,7 @@ METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-m
 
 class SpeedbarMiddleware(object):
     def process_request(self, request):
-        StackTracer.instance().root.label = '%s %s' % (request.method, request.path)
+        RequestTrace.instance().stacktracer.root.label = '%s %s' % (request.method, request.path)
 
     def process_response(self, request, response):
         request_trace = RequestTrace.instance()
