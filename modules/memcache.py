@@ -10,10 +10,6 @@ class Module(BaseModule):
 
     def get_metrics(self):
         return RequestTrace.instance().stacktracer.get_node_metrics('MEMCACHE')
-        return {
-            'count': len(self.queries),
-            'time' : int(sum(q['time'] for q in self.queries) * 1000),
-            }
 
     def get_details(self):
         memcache_nodes = RequestTrace.instance().stacktracer.get_nodes('MEMCACHE')

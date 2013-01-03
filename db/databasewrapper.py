@@ -20,7 +20,7 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
     def executemany(self, sql, param_list):
         self.set_dirty()
         request_trace = RequestTrace.instance()
-        stack_entry = request_trace.stacktracer.push_stack('SQL', sql)
+        request_trace.stacktracer.push_stack('SQL', sql)
         try:
             return self.cursor.executemany(sql, param_list)
         finally:
