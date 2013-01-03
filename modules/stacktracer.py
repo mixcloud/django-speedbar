@@ -1,23 +1,26 @@
 from __future__ import absolute_import
 from .base import BaseModule
+from collections import defaultdict
 
 import time
 
 class StackEntry(object):
-    def __init__(self, id_generator, entry_type, label, extra=None):
+    def __init__(self, id_generator, entry_map, entry_type, label, extra=None):
         self.id_generator = id_generator
+        self.entry_map = entry_map
         self.entry_id = id_generator()
         self.entry_type = entry_type
         self.label = label
         self.extra = extra
         self.start = int(time.time()*1000)
         self.children = []
+        self.entry_map[entry_type].append(self)
 
     def mark_end(self):
         self.end = int(time.time()*1000)
 
     def add_child(self, entry_type, label, extra=None):
-        child = StackEntry(self.id_generator, entry_type, label, extra)
+        child = StackEntry(self.id_generator, self.entry_map, entry_type, label, extra)
         self.children.append(child)
         return child
 
@@ -51,12 +54,13 @@ class StackTracer(BaseModule):
         self.root = None
         self.stack = []
         self.stack_id = 0
+        self.entry_map = defaultdict(list)
         
     def push_stack(self, entry_type, label, extra=None):
         if len(self.stack):
             entry = self.stack[-1].add_child(entry_type, label, extra)
         else:
-            entry = self.root = StackEntry(self._get_next_id, entry_type, label, extra)
+            entry = self.root = StackEntry(self._get_next_id, self.entry_map, entry_type, label, extra)
         self.stack.append(entry)
         return entry
 
@@ -75,16 +79,7 @@ class StackTracer(BaseModule):
         }
 
     def get_nodes(self, node_type):
-        accumulator = []
-        self._get_nodes(node_type, self.root, accumulator)
-        return accumulator
-
-    def _get_nodes(self, node_type, node, accumulator):
-        for child in node.children:
-            if child.entry_type == node_type:
-                accumulator.append(child)
-            else:
-                self._get_nodes(node_type, child, accumulator)
+        return self.entry_map[node_type]
 
     def speedtracer_log(self):
         entries_as_dict = self.root.to_dict()
