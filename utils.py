@@ -11,11 +11,18 @@ SPEEDBAR_MODULES = [
     'mixcloud.speedbar.modules.celeryjobs',
     'mixcloud.speedbar.modules.stacktracer',
     'mixcloud.speedbar.modules.requeststages',
+    'mixcloud.speedbar.modules.redis',
 ]
 
 loaded_modules = [import_module(m) for m in getattr(settings, 'SPEEDBAR_MODULES', SPEEDBAR_MODULES)]
 
+modules_initialised = False
 def init_modules():
+    global modules_initialised
+    if modules_initialised:
+        return
+    modules_initialised = True
+
     for module in loaded_modules:
         if hasattr(module, 'init'):
             module.init()
