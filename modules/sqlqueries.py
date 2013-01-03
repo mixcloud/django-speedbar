@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .base import BaseModule
+from .base import BaseModule, RequestTrace
 
 
 class Module(BaseModule):
@@ -10,15 +10,8 @@ class Module(BaseModule):
         self.queries = []
 
     def get_metrics(self):
-        return {
-            'count': len(self.queries),
-            'time' : int(sum(q['time'] for q in self.queries) * 1000),
-            }
+        return RequestTrace.instance().stacktracer.get_node_metrics('SQL')
 
     def get_details(self):
-        return [{'sql': query['sql'], 'time': query['time'], 'count': query['count']} for query in self.queries ]
-
-    def record_query_details(self, sql, time, backtrace, count=1):
-        self.queries.append({'sql': sql, 'time': time, 'backtrace': backtrace, 'count': count})
-
-
+        sql_nodes = RequestTrace.instance().stacktracer.get_nodes('SQL')
+        return [{'sql': node.label, 'time': node.duration} for node in sql_nodes]
