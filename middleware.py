@@ -2,8 +2,9 @@ from mixcloud.speedbar.modules.base import RequestTrace
 
 from django.utils.encoding import smart_unicode, smart_str
 from django.utils.html import escapejs
-from django.conf import settings
 from django.core.urlresolvers import reverse
+
+from gargoyle import gargoyle
 
 import re
 
@@ -40,11 +41,12 @@ class SpeedbarMiddleware(object):
                     return unicode(metrics[module][metric])
                 content = METRIC_PLACEHOLDER_RE.sub(replace_placeholder, content)
 
-                if settings.DEBUG:
+                if gargoyle.is_active('speedbar:panel', request):
                     panel_url = reverse('speedbar_panel', args=[request_trace.id])
                     content = content.replace(
                         u'<script data-speedbar-panel-url-placeholder></script>',
                         u'<script>var _speedbar_panel_url = "%s";</script>' % (escapejs(panel_url),))
+                if gargoyle.is_active('speedbar:trace', request):
                     response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
 
                 response.content = smart_str(content)
