@@ -18,12 +18,8 @@ class Module(BaseModule):
 
 # The linter thinks the methods we monkeypatch are not used
 # pylint: disable=W0612
-
-# In the functions below the wraps() call sets up this method to have the correct name, which means
-# that monkeypatch_method attaches it to the correct object on the memcache client
 def wrap_operation(operation):
-    @monkeypatch_method(memcache.Client)
-    @wraps(getattr(memcache.Client, operation))
+    @monkeypatch_method(memcache.Client, operation)
     def wrapper(original, self, *args, **kwargs):
         stack_tracer = RequestTrace.instance().stacktracer
         try:
@@ -32,14 +28,9 @@ def wrap_operation(operation):
         finally:
             stack_tracer.pop_stack()
 
-def wrap_multi_operation(operation):
-    # The linter thinks the methods we monkeypatch are not used
-    # pylint: disable=W0612
 
-    # the wraps() call sets up this method to have the correct name, which means that monkeypatch_method attaches it to
-    # the correct object on the memcache client
-    @monkeypatch_method(memcache.Client)
-    @wraps(getattr(memcache.Client, operation))
+def wrap_multi_operation(operation):
+    @monkeypatch_method(memcache.Client, operation)
     def wrapper(original, self, *args, **kwargs):
         stack_tracer = RequestTrace.instance().stacktracer
         try:
@@ -47,6 +38,7 @@ def wrap_multi_operation(operation):
             return original(self, *args, **kwargs)
         finally:
             stack_tracer.pop_stack()
+
 
 def init():
     operations = [
