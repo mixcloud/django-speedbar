@@ -50,8 +50,9 @@ def intercept_middleware():
         if not middleware_patched and self._request_middleware is not None:
             self.initLock.acquire()
             try:
-                wrap_middleware_with_tracers(self)
-                middleware_patched = True
+                if not middleware_patched:
+                    wrap_middleware_with_tracers(self)
+                    middleware_patched = True
             finally:
                 self.initLock.release()
         return original(self, *args, **kwargs)
