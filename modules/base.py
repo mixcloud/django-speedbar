@@ -38,4 +38,14 @@ class RequestTrace(ThreadLocalSingleton):
         self.persist_log = False
 
 class BaseModule(object):
-    pass
+    def get_metrics(self):
+        """
+        Get a dictionary of summary metrics for the module
+        """
+        return dict()
+
+    def get_details(self):
+        """
+        Get a detailed breakdown of all information collected by the module if available
+        """
+        return None

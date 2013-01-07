@@ -5,11 +5,11 @@ DETAILS_PREFIX='speedbar:details:'
 TRACE_PREFIX='speedbar:trace:'
 
 SPEEDBAR_MODULES = [
+    'mixcloud.speedbar.modules.stacktracer', # Most other modules depend on this one
     'mixcloud.speedbar.modules.pagetimer',
     'mixcloud.speedbar.modules.hostinformation',
     'mixcloud.speedbar.modules.sql',
     'mixcloud.speedbar.modules.celeryjobs',
-    'mixcloud.speedbar.modules.stacktracer',
     'mixcloud.speedbar.modules.requeststages',
     'mixcloud.speedbar.modules.redis',
     'mixcloud.speedbar.modules.memcache',

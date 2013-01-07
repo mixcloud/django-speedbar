@@ -15,9 +15,10 @@ def store_request_trace(sender, **kwargs):
 
     # Calculate values before doing any cache writes, so the cache writes don't affect the results
     if request_trace.persist_details:
-        all_details = dict(
-            (key, module.get_details()) for key, module in request_trace.modules.items() if hasattr(module, 'get_details')
+        details_tuples = tuple(
+            (key, module.get_details()) for key, module in request_trace.modules.items()
         )
+        all_details = dict(details for details in details_tuples if details[1] is not None)
     if request_trace.persist_log:
         speedtracer_log = request_trace.stacktracer.speedtracer_log()
 
