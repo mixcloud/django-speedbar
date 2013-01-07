@@ -5,6 +5,10 @@ from functools import wraps
 
 import memcache
 
+MEMCACHE_OPERATIONS = [ 'add', 'append', 'cas', 'decr', 'delete', 'get', 'gets', 'incr', 'prepend', 'replace', 'set', ]
+MEMCACHE_MULTI_OPERATIONS = [ 'get_multi', 'set_multi', 'delete_multi', ]
+
+
 class Module(BaseModule):
     key = 'memcache'
 
@@ -18,7 +22,7 @@ class Module(BaseModule):
 
 # The linter thinks the methods we monkeypatch are not used
 # pylint: disable=W0612
-def wrap_operation(operation):
+def intercept_memcache_operation(operation):
     @monkeypatch_method(memcache.Client, operation)
     def wrapper(original, self, *args, **kwargs):
         stack_tracer = RequestTrace.instance().stacktracer
@@ -29,7 +33,7 @@ def wrap_operation(operation):
             stack_tracer.pop_stack()
 
 
-def wrap_multi_operation(operation):
+def intercept_memcache_multi_operation(operation):
     @monkeypatch_method(memcache.Client, operation)
     def wrapper(original, self, *args, **kwargs):
         stack_tracer = RequestTrace.instance().stacktracer
@@ -41,17 +45,8 @@ def wrap_multi_operation(operation):
 
 
 def init():
-    operations = [
-        'add', 'append', 'cas', 'decr', 'delete',
-        'get', 'gets', 'incr', 'prepend', 'replace', 'set',
-    ]
-    for operation in operations:
-        wrap_operation(operation)
+    for operation in MEMCACHE_OPERATIONS:
+        intercept_memcache_operation(operation)
 
-    multi_operations = [
-        'get_multi',
-        'set_multi',
-        'delete_multi',
-    ]
-    for operation in multi_operations:
-        wrap_multi_operation(operation)
+    for operation in MEMCACHE_MULTI_OPERATIONS:
+        intercept_memcache_multi_operation(operation)
