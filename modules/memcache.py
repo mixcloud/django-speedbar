@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from .base import BaseModule, RequestTrace
 from .monkey_patching import monkeypatch_method
-from functools import wraps
 
 import memcache
 

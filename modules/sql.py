@@ -2,8 +2,6 @@ from __future__ import absolute_import
 
 from django.db.backends import BaseDatabaseWrapper
 from django.db.backends.util import CursorWrapper
-from django.db.utils import load_backend
-from django.conf import settings
 from .base import BaseModule, RequestTrace
 from .monkey_patching import monkeypatch_method
 
@@ -45,6 +43,8 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
             request_trace.stacktracer.pop_stack()
 
 
+# The linter thinks the methods we monkeypatch are not used
+# pylint: disable=W0612
 def init():
     @monkeypatch_method(BaseDatabaseWrapper)
     def cursor(original, self, *args, **kwargs):
