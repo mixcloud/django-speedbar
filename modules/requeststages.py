@@ -45,11 +45,13 @@ def intercept_middleware():
     @monkeypatch_method(WSGIHandler)
     def __call__(original, self, *args, **kwargs):
         # The middleware cache may have been built before we have a chance to monkey patch
-        # it. Clear it so it gets rebuilt again.
+        # it, so do so here
+        global middleware_patched
         if not middleware_patched and self._request_middleware is not None:
             self.initLock.acquire()
             try:
-                self._request_middleware = None
+                wrap_middleware_with_tracers(self)
+                middleware_patched = True
             finally:
                 self.initLock.release()
         return original(self, *args, **kwargs)
