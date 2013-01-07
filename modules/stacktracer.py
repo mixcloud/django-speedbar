@@ -47,6 +47,14 @@ class StackEntry(object):
 
 
 class StackTracer(BaseModule):
+    """
+    This class maintains a call tree, with a pointer to the current stack
+    entry so that new frames can be added at any time without further context
+    by the various monkey patching functions.
+
+    It can provide all entries corresponding to operations of particular types, and
+    also build a valid HAR file out of the entire call tree for use with SpeedTracer
+    """
     key = 'stacktracer'
 
     def __init__(self):
@@ -55,7 +63,7 @@ class StackTracer(BaseModule):
         self.stack = []
         self.stack_id = 0
         self.entry_map = defaultdict(list)
-        
+
     def push_stack(self, entry_type, label, extra=None):
         if len(self.stack):
             entry = self.stack[-1].add_child(entry_type, label, extra)
@@ -96,5 +104,6 @@ class StackTracer(BaseModule):
     def _get_next_id(self):
         self.stack_id += 1
         return self.stack_id
+
 
 Module = StackTracer
