@@ -25,6 +25,10 @@ class ThreadLocalSingleton(object):
 
 
 class RequestTrace(ThreadLocalSingleton):
+    """
+    This is a container which keeps track of all module instances for a single request. For convenience they are made
+    available as attributes based on their keyname
+    """
     def __init__(self, modules=[]):
         super(RequestTrace, self).__init__()
         self.id = str(uuid4())

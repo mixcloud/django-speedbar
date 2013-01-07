@@ -15,10 +15,16 @@ SPEEDBAR_MODULES = [
     'mixcloud.speedbar.modules.memcache',
 ]
 
+# A module comprises of two parts, both of which are optional. It may have an init() function which is called once
+# on server startup, and it may have a class called Module which is instantiated once per request.
+
 loaded_modules = [import_module(m) for m in getattr(settings, 'SPEEDBAR_MODULES', SPEEDBAR_MODULES)]
 
 modules_initialised = False
 def init_modules():
+    """
+    Run the init function for all modules which have one
+    """
     global modules_initialised
     if modules_initialised:
         return
