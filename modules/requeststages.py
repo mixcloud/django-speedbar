@@ -23,9 +23,11 @@ def trace(function, action_type, label):
             stacktracer.pop_stack()
     return wrapper
 
+
 def patch_function_list(functions, action_type, format_string):
     for i, func in enumerate(functions):
         functions[i] = trace(func, action_type, format_string % (func.im_class.__name__),)
+
 
 def wrap_middleware_with_tracers(request_handler):
     patch_function_list(request_handler._request_middleware, 'MIDDLEWARE_REQUEST', 'Middleware: %s (request)')
@@ -35,24 +37,26 @@ def wrap_middleware_with_tracers(request_handler):
     patch_function_list(request_handler._exception_middleware, 'MIDDLEWARE_EXCEPTION', 'Middleware: %s (exeption)')
 
 
-def copymodule(old):
-    new = type(old)(old.__name__, old.__doc__)
-    new.__dict__.update(old.__dict__)
-    return new
-
-
-def init():
-    # The linter thinks the methods we monkeypatch are not used
-    # pylint: disable=W0612
-
+# The linter thinks the methods we monkeypatch are not used
+# pylint: disable=W0612
+def intercept_middleware():
     @monkeypatch_method(BaseHandler)
     def load_middleware(original, self, *args, **kwargs):
         original(self, *args, **kwargs)
         wrap_middleware_with_tracers(self)
 
+
+def intercept_resolver_and_view():
+    # The only way we can really wrap the view method is by replacing the implementation
+    # of RegexURLResolver.resolve. It would be nice if django had more configurability here, but it does not.
+    # However, we only want to replace it when invoked directly from the request handling stack, so we
+    # inspect the callstack in __new__ and return either a normal object, or an instance of our proxying
+    # class.
     real_resolver_cls = urlresolvers.RegexURLResolver
     class ProxyRegexURLResolverMetaClass(urlresolvers.RegexURLResolver.__class__):
         def __instancecheck__(self, instance):
+            # Some places in django do a type check against RegexURLResolver and behave differently based on the result, so we have to
+            # make sure the replacement class we plug in accepts instances of both the default and replaced types.
             return isinstance(instance, real_resolver_cls) or super(ProxyRegexURLResolverMetaClass, self).__instancecheck__(instance)
     class ProxyRegexURLResolver(object):
         __metaclass__ = ProxyRegexURLResolverMetaClass
@@ -74,10 +78,13 @@ def init():
                 callbacks = self.other.resolve(path)
             finally:
                 stack_tracer.pop_stack()
+            # Replace the callback function with a traced copy so we can time how long the view takes.
             callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
             return callbacks
     urlresolvers.RegexURLResolver = ProxyRegexURLResolver
 
+
+def intercept_template_methods():
     @monkeypatch_method(Template)
     def __init__(original, self, *args, **kwargs):
         name = args[2] if len(args) >= 3 else '<Unknown Template>'
@@ -105,3 +112,9 @@ def init():
             return original(self, *args, **kwargs)
         finally:
             stack_tracer.pop_stack()
+
+
+def init():
+    intercept_middleware()
+    intercept_resolver_and_view()
+    intercept_template_methods()
