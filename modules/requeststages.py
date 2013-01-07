@@ -4,6 +4,7 @@ from django.core import urlresolvers
 from django.template.base import Template
 from django.template.response import TemplateResponse
 from django.core.handlers.base import BaseHandler
+from django.core.handlers.wsgi import WSGIHandler
 
 from .base import RequestTrace
 from .monkey_patching import monkeypatch_method
@@ -39,11 +40,26 @@ def wrap_middleware_with_tracers(request_handler):
 
 # The linter thinks the methods we monkeypatch are not used
 # pylint: disable=W0612
+middleware_patched = False
 def intercept_middleware():
+    @monkeypatch_method(WSGIHandler)
+    def __call__(original, self, *args, **kwargs):
+        # The middleware cache may have been built before we have a chance to monkey patch
+        # it. Clear it so it gets rebuilt again.
+        if not middleware_patched and self._request_middleware is not None:
+            self.initLock.acquire()
+            try:
+                self._request_middleware = None
+            finally:
+                self.initLock.release()
+        return original(self, *args, **kwargs)
+
     @monkeypatch_method(BaseHandler)
     def load_middleware(original, self, *args, **kwargs):
+        global middleware_patched
         original(self, *args, **kwargs)
         wrap_middleware_with_tracers(self)
+        middleware_patched = True
 
 
 def intercept_resolver_and_view():
