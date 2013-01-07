@@ -3,6 +3,7 @@ from mixcloud.speedbar.modules.base import RequestTrace
 from django.utils.encoding import smart_unicode, smart_str
 from django.utils.html import escapejs
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from gargoyle import gargoyle
 
@@ -12,11 +13,17 @@ HTML_TYPES = ('text/html', 'application/xhtml+xml')
 
 METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-metric="(?P<metric>[^"]+)"></span>')
 
+SPEEDBAR_ENABLE = getattr(settings, 'SPEEDBAR_ENABLE', True)
+
 class SpeedbarMiddleware(object):
     def process_request(self, request):
-        RequestTrace.instance().stacktracer.root.label = '%s %s' % (request.method, request.path)
+        if SPEEDBAR_ENABLE:
+            RequestTrace.instance().stacktracer.root.label = '%s %s' % (request.method, request.path)
 
     def process_response(self, request, response):
+        if not SPEEDBAR_ENABLE:
+            return response
+
         request_trace = RequestTrace.instance()
         metrics = dict((key, module.get_metrics()) for key, module in request_trace.modules.items())
 
