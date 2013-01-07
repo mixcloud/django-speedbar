@@ -40,8 +40,10 @@ class SpeedbarMiddleware(object):
                     content = content.replace(
                         u'<script data-speedbar-panel-url-placeholder></script>',
                         u'<script>var _speedbar_panel_url = "%s";</script>' % (escapejs(panel_url),))
+                    request_trace.persist_details = True
                 if gargoyle.is_active('speedbar:trace', request):
                     response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
+                    request_trace.persist_log = True
 
                 response.content = smart_str(content)
                 if response.get('Content-Length', None):

@@ -34,6 +34,8 @@ class RequestTrace(ThreadLocalSingleton):
         self.id = str(uuid4())
         self.modules = dict((m.key, m) for m in modules)
         self.__dict__.update(self.modules)
+        self.persist_details = False
+        self.persist_log = False
 
 class BaseModule(object):
     pass
