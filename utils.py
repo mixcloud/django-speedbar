@@ -7,7 +7,7 @@ TRACE_PREFIX='speedbar:trace:'
 SPEEDBAR_MODULES = [
     'mixcloud.speedbar.modules.pagetimer',
     'mixcloud.speedbar.modules.hostinformation',
-    'mixcloud.speedbar.modules.sqlqueries',
+    'mixcloud.speedbar.modules.sql',
     'mixcloud.speedbar.modules.celeryjobs',
     'mixcloud.speedbar.modules.stacktracer',
     'mixcloud.speedbar.modules.requeststages',

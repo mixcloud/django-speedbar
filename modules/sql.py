@@ -1,9 +1,27 @@
+from __future__ import absolute_import
+
+from django.db.backends import BaseDatabaseWrapper
 from django.db.backends.util import CursorWrapper
 from django.db.utils import load_backend
-from mixcloud.speedbar.modules.base import RequestTrace
 from django.conf import settings
+from .base import BaseModule, RequestTrace
+from .monkey_patching import monkeypatch_method
 
-wrappedbackend = load_backend(settings.DATABASE_BACKEND_TO_TRACE)
+
+class Module(BaseModule):
+    key = 'sql'
+
+    def __init__(self):
+        super(Module, self).__init__()
+        self.queries = []
+
+    def get_metrics(self):
+        return RequestTrace.instance().stacktracer.get_node_metrics('SQL')
+
+    def get_details(self):
+        sql_nodes = RequestTrace.instance().stacktracer.get_nodes('SQL')
+        return [{'sql': node.label, 'time': node.duration} for node in sql_nodes]
+
 
 class _DetailedTracingCursorWrapper(CursorWrapper):
     def execute(self, sql, params=()):
@@ -27,8 +45,8 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
             request_trace.stacktracer.pop_stack()
 
 
-class DatabaseWrapper(wrappedbackend.DatabaseWrapper):
-    def cursor(self, *args, **kwargs):
-        cursor = wrappedbackend.DatabaseWrapper.cursor(self, *args, **kwargs)
-        return _DetailedTracingCursorWrapper(cursor, self)
-
+def init():
+    @monkeypatch_method(BaseDatabaseWrapper)
+    def cursor(original, self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        return _DetailedTracingCursorWrapper(result, self)
