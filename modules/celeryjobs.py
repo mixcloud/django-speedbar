@@ -25,10 +25,11 @@ class Module(BaseModule):
     def get_details(self):
         return self.jobs
 
+
 def celery_task_sent(sender, **kwargs):
     instance = RequestTrace.instance().celery
-    if instance:
-        instance.celery_task_sent(sender, **kwargs)
+    instance.celery_task_sent(sender, **kwargs)
+
 
 def init():
     task_sent.connect(celery_task_sent, dispatch_uid='celery_task_sent_speedbar')
