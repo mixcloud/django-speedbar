@@ -4,21 +4,15 @@ from django import template
 register = template.Library()
 
 @register.simple_tag
-def query_count():
-    return '<span id="query-count"></span>'
-
-@register.simple_tag
-def query_time():
-    return '<span id="query-time"></span>'
-
-@register.simple_tag
-def query_details_script():
-    return '<script id="query_details_script"></script>'
-
-@register.simple_tag
 def metric(module, metric):
+    """
+    Display a placeholder that the middleware converts to a particular summary metric
+    """
     return '<span data-module="%s" data-metric="%s"></span>' % (module, metric)
 
 @register.simple_tag
 def speedbar_script():
+    """
+    Display a placeholder that the middleware replaces with a URL setter.
+    """
     return '<script data-speedbar-panel-url-placeholder></script>'
