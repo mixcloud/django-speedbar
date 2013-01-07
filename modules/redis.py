@@ -30,6 +30,6 @@ def init():
         stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('REDIS', action, extra={'operation': args[0], 'key': key})
         try:
-            return original(self, *args, **kwargs)
+            return original(*args, **kwargs)
         finally:
             stack_tracer.pop_stack()

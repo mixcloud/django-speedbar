@@ -55,12 +55,12 @@ def intercept_middleware():
                     middleware_patched = True
             finally:
                 self.initLock.release()
-        return original(self, *args, **kwargs)
+        return original(*args, **kwargs)
 
     @monkeypatch_method(BaseHandler)
     def load_middleware(original, self, *args, **kwargs):
         global middleware_patched
-        original(self, *args, **kwargs)
+        original(*args, **kwargs)
         wrap_middleware_with_tracers(self)
         middleware_patched = True
 
@@ -110,7 +110,7 @@ def intercept_template_methods():
         stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('TEMPLATE_COMPILE', 'Compile template: ' + name)
         try:
-            original(self, *args, **kwargs)
+            original(*args, **kwargs)
         finally:
             stack_tracer.pop_stack()
 
@@ -119,7 +119,7 @@ def intercept_template_methods():
         stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('TEMPLATE_RENDER', 'Render template: ' + self.name)
         try:
-            return original(self, *args, **kwargs)
+            return original(*args, **kwargs)
         finally:
             stack_tracer.pop_stack()
 
@@ -128,7 +128,7 @@ def intercept_template_methods():
         stack_tracer = RequestTrace.instance().stacktracer
         stack_tracer.push_stack('TEMPLATE_CONTEXT', 'Resolve context')
         try:
-            return original(self, *args, **kwargs)
+            return original(*args, **kwargs)
         finally:
             stack_tracer.pop_stack()
 

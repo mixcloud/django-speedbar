@@ -7,7 +7,7 @@ def monkeypatch_method(cls, method_name=None):
         # We can't use partial as it doesn't return a real function
         @wraps(original)
         def replacement(self, *args, **kwargs):
-            return func(original, self, *args, **kwargs)
+            return func(original.__get__(self, cls), self, *args, **kwargs)
         setattr(cls, method_to_patch, replacement)
         return func
     return decorator

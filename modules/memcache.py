@@ -27,7 +27,7 @@ def intercept_memcache_operation(operation):
         stack_tracer = RequestTrace.instance().stacktracer
         try:
             stack_tracer.push_stack('MEMCACHE', 'Memcache: %s (%s)' % (operation, args[0]), extra={'operation': operation, 'key': args[0]})
-            return original(self, *args, **kwargs)
+            return original(*args, **kwargs)
         finally:
             stack_tracer.pop_stack()
 
@@ -38,7 +38,7 @@ def intercept_memcache_multi_operation(operation):
         stack_tracer = RequestTrace.instance().stacktracer
         try:
             stack_tracer.push_stack('MEMCACHE', 'Memcache: %s' % (operation,), extra={'operation': operation, 'key': ''})
-            return original(self, *args, **kwargs)
+            return original(*args, **kwargs)
         finally:
             stack_tracer.pop_stack()
 

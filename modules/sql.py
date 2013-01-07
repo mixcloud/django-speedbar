@@ -48,5 +48,5 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
 def init():
     @monkeypatch_method(BaseDatabaseWrapper)
     def cursor(original, self, *args, **kwargs):
-        result = original(self, *args, **kwargs)
+        result = original(*args, **kwargs)
         return _DetailedTracingCursorWrapper(result, self)
