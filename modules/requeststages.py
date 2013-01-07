@@ -27,7 +27,10 @@ def trace(function, action_type, label):
 
 def patch_function_list(functions, action_type, format_string):
     for i, func in enumerate(functions):
-        middleware_name = func.im_class.__name__ if hasattr(func, 'im_class') else func.__name__
+        if hasattr(func, 'im_class'):
+            middleware_name = func.im_class.__name__
+        else:
+            middleware_name = func.__name__
         functions[i] = trace(func, action_type, format_string % (middleware_name,))
 
 
