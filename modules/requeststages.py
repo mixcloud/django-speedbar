@@ -14,15 +14,19 @@ import traceback
 
 
 def trace(function, action_type, label):
-    @wraps(function)
-    def wrapper(*args, **kwargs):
-        stacktracer = RequestTrace.instance().stacktracer
-        stacktracer.push_stack(action_type, label)
-        try:
-            return function(*args, **kwargs)
-        finally:
-            stacktracer.pop_stack()
-    return wrapper
+    try:
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            stacktracer = RequestTrace.instance().stacktracer
+            stacktracer.push_stack(action_type, label)
+            try:
+                return function(*args, **kwargs)
+            finally:
+                stacktracer.pop_stack()
+        return wrapper
+    except Exception:
+        # If we can't wrap for any reason, just return the original
+        return function
 
 
 def patch_function_list(functions, action_type, format_string):
