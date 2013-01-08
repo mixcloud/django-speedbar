@@ -106,7 +106,7 @@ def intercept_resolver_and_view():
             finally:
                 stack_tracer.pop_stack()
             # Replace the callback function with a traced copy so we can time how long the view takes.
-            callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
+            #callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
             return callbacks
     urlresolvers.RegexURLResolver = ProxyRegexURLResolver
 
