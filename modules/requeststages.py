@@ -7,23 +7,21 @@ from django.core.handlers.base import BaseHandler
 from django.core.handlers.wsgi import WSGIHandler
 
 from .base import RequestTrace
-from .monkey_patching import monkeypatch_method
+from .monkey_patching import monkeypatch_method, CallableProxy
 
-from functools import wraps
 import traceback
 
 
 def trace(function, action_type, label):
     try:
-        @wraps(function)
-        def wrapper(*args, **kwargs):
+        def wrapper(original, *args, **kwargs):
             stacktracer = RequestTrace.instance().stacktracer
             stacktracer.push_stack(action_type, label)
             try:
-                return function(*args, **kwargs)
+                return original(*args, **kwargs)
             finally:
                 stacktracer.pop_stack()
-        return wrapper
+        return CallableProxy(function, wrapper)
     except Exception:
         # If we can't wrap for any reason, just return the original
         return function
@@ -106,7 +104,7 @@ def intercept_resolver_and_view():
             finally:
                 stack_tracer.pop_stack()
             # Replace the callback function with a traced copy so we can time how long the view takes.
-            #callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
+            callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
             return callbacks
     urlresolvers.RegexURLResolver = ProxyRegexURLResolver
 
