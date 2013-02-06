@@ -18,7 +18,7 @@ class Module(BaseModule):
 
     def get_details(self):
         sql_nodes = RequestTrace.instance().stacktracer.get_nodes('SQL')
-        return [{'sql': node.label, 'time': node.duration} for node in sql_nodes]
+        return [{'sql': node.label, 'time': int(node.duration*1000)} for node in sql_nodes]
 
 
 class _DetailedTracingCursorWrapper(CursorWrapper):

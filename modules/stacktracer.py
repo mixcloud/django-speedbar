@@ -12,12 +12,12 @@ class StackEntry(object):
         self.entry_type = entry_type
         self.label = label
         self.extra = extra
-        self.start = int(time.time()*1000)
+        self.start = time.time()
         self.children = []
         self.entry_map[entry_type].append(self)
 
     def mark_end(self):
-        self.end = int(time.time()*1000)
+        self.end = time.time()
 
     def add_child(self, entry_type, label, extra=None):
         child = StackEntry(self.id_generator, self.entry_map, entry_type, label, extra)
@@ -34,9 +34,9 @@ class StackEntry(object):
         return {
             'id': str(self.entry_id),
             'range': {
-                'start': self.start,
-                'end': self.end,
-                'duration': self.duration,
+                'start': int(self.start*1000),
+                'end': int(self.end*1000),
+                'duration': int(self.duration*1000),
             },
             'operation' : {
                 'type': self.entry_type,
@@ -82,7 +82,7 @@ class StackTracer(BaseModule):
     def get_node_metrics(self, node_type):
         nodes = self.get_nodes(node_type)
         return {
-            'time': sum(x.duration for x in nodes),
+            'time': int(sum(x.duration for x in nodes)*1000),
             'count': len(nodes),
         }
 
