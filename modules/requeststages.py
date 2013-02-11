@@ -7,7 +7,7 @@ from django.core.handlers.base import BaseHandler
 from django.core.handlers.wsgi import WSGIHandler
 
 from .base import RequestTrace
-from .monkey_patching import monkeypatch_method, CallableProxy
+from .monkey_patching import monkeypatch_method
 from .stacktracer import trace_method, trace_function
 
 import traceback
