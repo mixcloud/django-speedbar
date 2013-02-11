@@ -1,6 +1,9 @@
 from __future__ import absolute_import
-from .base import BaseModule
+
 from collections import defaultdict
+
+from .base import BaseModule, RequestTrace
+from .monkey_patching import monkeypatch_method, CallableProxy
 
 import time
 
@@ -105,5 +108,38 @@ class StackTracer(BaseModule):
         self.stack_id += 1
         return self.stack_id
 
-
 Module = StackTracer
+
+
+# The linter thinks the methods we monkeypatch are not used
+# pylint: disable=W0612
+def trace_method(cls, method_name):
+    def decorator(info_func):
+        method_to_patch = method_name
+        @monkeypatch_method(cls, method_to_patch)
+        def tracing_method(original, self, *args, **kwargs):
+            stack_tracer = RequestTrace.instance().stacktracer
+            entry_type, label, extra = info_func(self, *args, **kwargs)
+            stack_tracer.push_stack(entry_type, label, extra=extra)
+            try:
+                return original(*args, **kwargs)
+            finally:
+                stack_tracer.pop_stack()
+        return tracing_method
+    return decorator
+
+
+def trace_function(func, info_func):
+    try:
+        def tracing_function(original, *args, **kwargs):
+            stacktracer = RequestTrace.instance().stacktracer
+            entry_type, label, extra = info_func(*args, **kwargs)
+            stacktracer.push_stack(entry_type, label, extra)
+            try:
+                return original(*args, **kwargs)
+            finally:
+                stacktracer.pop_stack()
+        return CallableProxy(func, tracing_function)
+    except Exception:
+        # If we can't wrap for any reason, just return the original
+        return func
