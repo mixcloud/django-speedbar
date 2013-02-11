@@ -18,10 +18,9 @@ class ThreadLocalSingleton(object):
 
     @classmethod
     def instance(cls):
-        thread_id = get_ident()
-        if not hasattr(cls, '_thread_lookup') or thread_id not in cls._thread_lookup:
-            cls()
-        return cls._thread_lookup[thread_id]
+        if not hasattr(cls, '_thread_lookup'):
+            cls._thread_lookup = dict()
+        return cls._thread_lookup.get(get_ident(), None)
 
 
 class RequestTrace(ThreadLocalSingleton):

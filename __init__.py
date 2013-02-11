@@ -23,8 +23,5 @@ from mixcloud.speedbar.utils import init_modules
 if getattr(settings, 'SPEEDBAR_ENABLE', True):
     init_modules()
 
-    # Initial dummy request to catch early events
-    setup_request_tracing(None)
-
     request_started.connect(setup_request_tracing, dispatch_uid='request_started_speedbar_setup_request_tracing')
     request_finished.connect(store_request_trace, dispatch_uid='request_started_speedbar_store_request_trace')
