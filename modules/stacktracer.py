@@ -113,9 +113,9 @@ Module = StackTracer
 
 # The linter thinks the methods we monkeypatch are not used
 # pylint: disable=W0612
-def trace_method(cls, method_name):
+def trace_method(cls, method_name=None):
     def decorator(info_func):
-        method_to_patch = method_name
+        method_to_patch = method_name or info_func.__name__
         @monkeypatch_method(cls, method_to_patch)
         def tracing_method(original, self, *args, **kwargs):
             stack_tracer = RequestTrace.instance().stacktracer

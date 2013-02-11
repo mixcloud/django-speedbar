@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from .base import BaseModule, RequestTrace
-from .monkey_patching import monkeypatch_method
+from .stacktracer import trace_method
 
 import memcache
 
@@ -22,25 +22,15 @@ class Module(BaseModule):
 # The linter thinks the methods we monkeypatch are not used
 # pylint: disable=W0612
 def intercept_memcache_operation(operation):
-    @monkeypatch_method(memcache.Client, operation)
-    def wrapper(original, self, *args, **kwargs):
-        stack_tracer = RequestTrace.instance().stacktracer
-        try:
-            stack_tracer.push_stack('MEMCACHE', 'Memcache: %s (%s)' % (operation, args[0]), extra={'operation': operation, 'key': args[0]})
-            return original(*args, **kwargs)
-        finally:
-            stack_tracer.pop_stack()
+    @trace_method(memcache.Client, operation)
+    def info(self, *args, **kwargs):
+        return ('MEMCACHE', 'Memcache: %s (%s)' % (operation, args[0]), {'operation': operation, 'key': args[0]})
 
 
 def intercept_memcache_multi_operation(operation):
-    @monkeypatch_method(memcache.Client, operation)
-    def wrapper(original, self, *args, **kwargs):
-        stack_tracer = RequestTrace.instance().stacktracer
-        try:
-            stack_tracer.push_stack('MEMCACHE', 'Memcache: %s' % (operation,), extra={'operation': operation, 'key': ''})
-            return original(*args, **kwargs)
-        finally:
-            stack_tracer.pop_stack()
+    @trace_method(memcache.Client, operation)
+    def info(self, *args, **kwargs):
+        return ('MEMCACHE', 'Memcache: %s' % (operation,), {'operation': operation, 'key': ''})
 
 
 def init():

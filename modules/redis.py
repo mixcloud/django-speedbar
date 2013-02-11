@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from .base import BaseModule, RequestTrace
-from .monkey_patching import monkeypatch_method
+from .stacktracer import trace_method
 
 from redis import Redis
 
@@ -18,18 +18,12 @@ def init():
     # The linter thinks the methods we monkeypatch are not used
     # pylint: disable=W0612
 
-    @monkeypatch_method(Redis)
-    def execute_command(original, self, *args, **kwargs):
+    @trace_method(Redis)
+    def execute_command(self, *args, **kwargs):
         if len(args) >= 2:
             action = 'Redis: %s (%s)' % args[:2]
             key = args[1]
         else:
             action = 'Redis: %s' % args[:1]
             key = ''
-
-        stack_tracer = RequestTrace.instance().stacktracer
-        stack_tracer.push_stack('REDIS', action, extra={'operation': args[0], 'key': key})
-        try:
-            return original(*args, **kwargs)
-        finally:
-            stack_tracer.pop_stack()
+        return ('REDIS', action, {'operation': args[0], 'key': key})
