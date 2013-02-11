@@ -118,13 +118,14 @@ def trace_method(cls, method_name=None):
         method_to_patch = method_name or info_func.__name__
         @monkeypatch_method(cls, method_to_patch)
         def tracing_method(original, self, *args, **kwargs):
-            stack_tracer = RequestTrace.instance().stacktracer
+            request_trace = RequestTrace.instance()
             entry_type, label, extra = info_func(self, *args, **kwargs)
-            stack_tracer.push_stack(entry_type, label, extra=extra)
+            request_trace.stacktracer.push_stack(entry_type, label, extra=extra)
             try:
                 return original(*args, **kwargs)
             finally:
-                stack_tracer.pop_stack()
+                if request_trace:
+                    request_trace.stacktracer.pop_stack()
         return tracing_method
     return decorator
 
@@ -132,16 +133,18 @@ def trace_method(cls, method_name=None):
 def trace_function(func, info):
     try:
         def tracing_function(original, *args, **kwargs):
-            stacktracer = RequestTrace.instance().stacktracer
-            if callable(info):
-                entry_type, label, extra = info(*args, **kwargs)
-            else:
-                entry_type, label, extra = info
-            stacktracer.push_stack(entry_type, label, extra)
+            request_trace = RequestTrace.instance()
+            if request_trace:
+                if callable(info):
+                    entry_type, label, extra = info(*args, **kwargs)
+                else:
+                    entry_type, label, extra = info
+                request_trace.stacktracer.push_stack(entry_type, label, extra)
             try:
                 return original(*args, **kwargs)
             finally:
-                stacktracer.pop_stack()
+                if request_trace:
+                    request_trace.stacktracer.pop_stack()
         return CallableProxy(func, tracing_function)
     except Exception:
         # If we can't wrap for any reason, just return the original

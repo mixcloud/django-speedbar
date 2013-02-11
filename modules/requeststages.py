@@ -84,12 +84,14 @@ def intercept_resolver_and_view():
         def __getattr__(self, attr):
             return getattr(self.other, attr)
         def resolve(self, path):
-            stack_tracer = RequestTrace.instance().stacktracer
-            stack_tracer.push_stack('RESOLV', 'Resolving: ' + path)
+            request_trace = RequestTrace.instance()
+            if request_trace:
+                request_trace.stacktracer.push_stack('RESOLV', 'Resolving: ' + path)
             try:
                 callbacks = self.other.resolve(path)
             finally:
-                stack_tracer.pop_stack()
+                if request_trace:
+                    request_trace.stacktracer.pop_stack()
             # Replace the callback function with a traced copy so we can time how long the view takes.
             callbacks.func = trace_function(callbacks.func, ('VIEW', 'View: ' + callbacks.view_name, {}))
             return callbacks

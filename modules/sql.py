@@ -25,22 +25,26 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
     def execute(self, sql, params=()):
         self.set_dirty()
         request_trace = RequestTrace.instance()
-        stack_entry = request_trace.stacktracer.push_stack('SQL', sql)
+        if request_trace:
+            stack_entry = request_trace.stacktracer.push_stack('SQL', sql)
         try:
             return self.cursor.execute(sql, params)
         finally:
-            request_trace.stacktracer.pop_stack()
-            sql = self.db.ops.last_executed_query(self.cursor, sql, params)
-            stack_entry.label = sql
+            if request_trace:
+                request_trace.stacktracer.pop_stack()
+                sql = self.db.ops.last_executed_query(self.cursor, sql, params)
+                stack_entry.label = sql
 
     def executemany(self, sql, param_list):
         self.set_dirty()
         request_trace = RequestTrace.instance()
-        request_trace.stacktracer.push_stack('SQL', sql)
+        if request_trace:
+            request_trace.stacktracer.push_stack('SQL', sql)
         try:
             return self.cursor.executemany(sql, param_list)
         finally:
-            request_trace.stacktracer.pop_stack()
+            if request_trace:
+                request_trace.stacktracer.pop_stack()
 
 
 # The linter thinks the methods we monkeypatch are not used

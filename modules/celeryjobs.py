@@ -27,8 +27,9 @@ class Module(BaseModule):
 
 
 def celery_task_sent(sender, **kwargs):
-    instance = RequestTrace.instance().celery
-    instance.celery_task_sent(sender, **kwargs)
+    instance = RequestTrace.instance()
+    if intance:
+        instance.celery.celery_task_sent(sender, **kwargs)
 
 
 def init():
