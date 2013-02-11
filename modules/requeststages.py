@@ -8,23 +8,9 @@ from django.core.handlers.wsgi import WSGIHandler
 
 from .base import RequestTrace
 from .monkey_patching import monkeypatch_method, CallableProxy
+from .stacktracer import trace_method, trace_function
 
 import traceback
-
-
-def trace(function, action_type, label):
-    try:
-        def wrapper(original, *args, **kwargs):
-            stacktracer = RequestTrace.instance().stacktracer
-            stacktracer.push_stack(action_type, label)
-            try:
-                return original(*args, **kwargs)
-            finally:
-                stacktracer.pop_stack()
-        return CallableProxy(function, wrapper)
-    except Exception:
-        # If we can't wrap for any reason, just return the original
-        return function
 
 
 def patch_function_list(functions, action_type, format_string):
@@ -33,7 +19,8 @@ def patch_function_list(functions, action_type, format_string):
             middleware_name = func.im_class.__name__
         else:
             middleware_name = func.__name__
-        functions[i] = trace(func, action_type, format_string % (middleware_name,))
+        info = (action_type, format_string % (middleware_name,), {})
+        functions[i] = trace_function(func, info)
 
 
 def wrap_middleware_with_tracers(request_handler):
@@ -104,39 +91,24 @@ def intercept_resolver_and_view():
             finally:
                 stack_tracer.pop_stack()
             # Replace the callback function with a traced copy so we can time how long the view takes.
-            callbacks.func = trace(callbacks.func, 'VIEW', 'View: ' + callbacks.view_name)
+            callbacks.func = trace_function(callbacks.func, ('VIEW', 'View: ' + callbacks.view_name, {}))
             return callbacks
     urlresolvers.RegexURLResolver = ProxyRegexURLResolver
 
 
 def intercept_template_methods():
-    @monkeypatch_method(Template)
-    def __init__(original, self, *args, **kwargs):
+    @trace_method(Template)
+    def __init__(self, *args, **kwargs):
         name = args[2] if len(args) >= 3 else '<Unknown Template>'
-        stack_tracer = RequestTrace.instance().stacktracer
-        stack_tracer.push_stack('TEMPLATE_COMPILE', 'Compile template: ' + name)
-        try:
-            original(*args, **kwargs)
-        finally:
-            stack_tracer.pop_stack()
+        return ('TEMPLATE_COMPILE', 'Compile template: ' + name, {})
 
-    @monkeypatch_method(Template)
-    def render(original, self, *args, **kwargs):
-        stack_tracer = RequestTrace.instance().stacktracer
-        stack_tracer.push_stack('TEMPLATE_RENDER', 'Render template: ' + self.name)
-        try:
-            return original(*args, **kwargs)
-        finally:
-            stack_tracer.pop_stack()
+    @trace_method(Template)
+    def render(self, *args, **kwargs):
+        return ('TEMPLATE_RENDER', 'Render template: ' + self.name, {})
 
-    @monkeypatch_method(TemplateResponse)
-    def resolve_context(original, self, *args, **kwargs):
-        stack_tracer = RequestTrace.instance().stacktracer
-        stack_tracer.push_stack('TEMPLATE_CONTEXT', 'Resolve context')
-        try:
-            return original(*args, **kwargs)
-        finally:
-            stack_tracer.pop_stack()
+    @trace_method(TemplateResponse)
+    def resolve_context(self, *args, **kwargs):
+        return ('TEMPLATE_CONTEXT', 'Resolve context', {})
 
 
 def init():

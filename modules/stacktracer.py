@@ -129,11 +129,14 @@ def trace_method(cls, method_name=None):
     return decorator
 
 
-def trace_function(func, info_func):
+def trace_function(func, info):
     try:
         def tracing_function(original, *args, **kwargs):
             stacktracer = RequestTrace.instance().stacktracer
-            entry_type, label, extra = info_func(*args, **kwargs)
+            if callable(info):
+                entry_type, label, extra = info(*args, **kwargs)
+            else:
+                entry_type, label, extra = info
             stacktracer.push_stack(entry_type, label, extra)
             try:
                 return original(*args, **kwargs)
