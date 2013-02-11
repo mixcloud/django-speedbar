@@ -13,6 +13,7 @@ SPEEDBAR_MODULES = [
     'mixcloud.speedbar.modules.requeststages',
     'mixcloud.speedbar.modules.redis',
     'mixcloud.speedbar.modules.memcache',
+    'mixcloud.speedbar.modules.haystack',
 ]
 
 # A module comprises of two parts, both of which are optional. It may have an init() function which is called once
