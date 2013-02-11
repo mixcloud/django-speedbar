@@ -1,36 +1,31 @@
 from __future__ import absolute_import
-from .base import BaseModule, RequestTrace
 
 from celery.signals import task_sent
+from celery.app.task import Task as AppTask
+from celery.task import Task as TaskTask
+from celery import Task as CeleryTask
+
+from .base import BaseModule, RequestTrace
+from .stacktracer import trace_method
+
+ENTRY_TYPE = 'CELERY'
 
 class Module(BaseModule):
     key = 'celery'
 
-    def __init__(self):
-        super(Module, self).__init__()
-        self.jobs = []
-
-    def celery_task_sent(self, sender, **kwargs):
-        self.jobs.append({
-            'name': kwargs['task'],
-            'args': kwargs['args'],
-            'kwargs': kwargs['kwargs'],
-            })
-
     def get_metrics(self):
-        return {
-            'count' : len(self.jobs),
-            }
+        return RequestTrace.instance().stacktracer.get_node_metrics(ENTRY_TYPE)
 
     def get_details(self):
-        return self.jobs
-
-
-def celery_task_sent(sender, **kwargs):
-    instance = RequestTrace.instance()
-    if instance:
-        instance.celery.celery_task_sent(sender, **kwargs)
+        nodes = RequestTrace.instance().stacktracer.get_nodes(ENTRY_TYPE)
+        return [{'type': node.extra['type'], 'args': node.extra['args'], 'kwargs': node.extra['kwargs'], 'time': node.duration} for node in nodes]
 
 
 def init():
-    task_sent.connect(celery_task_sent, dispatch_uid='celery_task_sent_speedbar')
+    def apply_async(self, args, kwargs, *_args, **_kwargs):
+        return (ENTRY_TYPE, 'Celery: %s' % (self.__name__,), {'type': self.__name__, 'args': args, 'kwargs': kwargs})
+    # Celery has various legacy ways of getting to the task object, which python
+    # interprets as different types, so we have to patch all of them.
+    #trace_method(AppTask)(apply_async)
+    #trace_method(CeleryTask)(apply_async)
+    trace_method(TaskTask)(apply_async)

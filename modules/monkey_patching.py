@@ -44,15 +44,15 @@ class UnboundMethodProxy(CallableProxy):
     __slots__ = ('__eop_wrapper__')
 
     def __get__(self, instance, owner):
-        return BoundMethodProxy(self.__subject__.__get__(instance, owner), instance, self.__eop_wrapper__)
+        return BoundMethodProxy(self.__subject__.__get__(instance, owner), instance or owner, self.__eop_wrapper__)
 
 
 def monkeypatch_method(cls, method_name=None):
     def decorator(func):
         method_to_patch = method_name or func.__name__
-        original = getattr(cls, method_to_patch)
+        original = cls.__dict__[method_to_patch]
         replacement = UnboundMethodProxy(original, func)
-        setattr(cls, method_to_patch, replacement)
+        type.__setattr__(cls, method_to_patch, replacement) # Avoid any overrides
         return func
     return decorator
 

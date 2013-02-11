@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
 
-from redis import Redis
+from redis import StrictRedis
 
 class Module(BaseModule):
     key = 'redis'
@@ -18,7 +18,7 @@ def init():
     # The linter thinks the methods we monkeypatch are not used
     # pylint: disable=W0612
 
-    @trace_method(Redis)
+    @trace_method(StrictRedis)
     def execute_command(self, *args, **kwargs):
         if len(args) >= 2:
             action = 'Redis: %s (%s)' % args[:2]
