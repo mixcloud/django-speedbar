@@ -21,7 +21,7 @@ class Module(BaseModule):
 
 
 def init():
-    def apply_async(self, args, kwargs, *_args, **_kwargs):
+    def apply_async(self, args=None, kwargs=None, *_args, **_kwargs):
         return (ENTRY_TYPE, 'Celery: %s' % (self.__name__,), {'type': self.__name__, 'args': args, 'kwargs': kwargs})
     # Celery has various legacy ways of getting to the task object, which python
     # interprets as different types, so we have to patch all of them.
