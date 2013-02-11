@@ -1,9 +1,8 @@
 from __future__ import absolute_import
 
-from celery.signals import task_sent
-from celery.app.task import Task as AppTask
+#from celery.app.task import Task as AppTask
 from celery.task import Task as TaskTask
-from celery import Task as CeleryTask
+#from celery import Task as CeleryTask
 
 from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
