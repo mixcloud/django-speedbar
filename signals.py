@@ -11,6 +11,9 @@ def setup_request_tracing(sender, **kwargs):
 
 def store_request_trace(sender, **kwargs):
     request_trace = RequestTrace.instance()
+    if not request_trace:
+        return
+
     request_trace.stacktracer.pop_stack()
 
     # Calculate values before doing any cache writes, so the cache writes don't affect the results

@@ -119,8 +119,9 @@ def trace_method(cls, method_name=None):
         @monkeypatch_method(cls, method_to_patch)
         def tracing_method(original, self, *args, **kwargs):
             request_trace = RequestTrace.instance()
-            entry_type, label, extra = info_func(self, *args, **kwargs)
-            request_trace.stacktracer.push_stack(entry_type, label, extra=extra)
+            if request_trace:
+                entry_type, label, extra = info_func(self, *args, **kwargs)
+                request_trace.stacktracer.push_stack(entry_type, label, extra=extra)
             try:
                 return original(*args, **kwargs)
             finally:
