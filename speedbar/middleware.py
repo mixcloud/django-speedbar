@@ -1,4 +1,4 @@
-from mixcloud.speedbar.modules.base import RequestTrace
+from speedbar.modules.base import RequestTrace
 
 from django.utils.encoding import smart_unicode, smart_str
 from django.utils.html import escapejs

@@ -1,6 +1,6 @@
 from django.core.cache import cache
-from mixcloud.speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX, loaded_modules
-from mixcloud.speedbar.modules.base import RequestTrace
+from speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX, loaded_modules
+from speedbar.modules.base import RequestTrace
 
 DETAILS_CACHE_TIME = 60 * 30 # 30 minutes
 

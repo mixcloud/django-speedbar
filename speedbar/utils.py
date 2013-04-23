@@ -5,15 +5,15 @@ DETAILS_PREFIX='speedbar:details:'
 TRACE_PREFIX='speedbar:trace:'
 
 SPEEDBAR_MODULES = [
-    'mixcloud.speedbar.modules.stacktracer', # Most other modules depend on this one
-    'mixcloud.speedbar.modules.pagetimer',
-    'mixcloud.speedbar.modules.hostinformation',
-    'mixcloud.speedbar.modules.sql',
-    'mixcloud.speedbar.modules.celeryjobs',
-    'mixcloud.speedbar.modules.requeststages',
-    'mixcloud.speedbar.modules.redis',
-    'mixcloud.speedbar.modules.memcache',
-    'mixcloud.speedbar.modules.haystack',
+    'speedbar.modules.stacktracer', # Most other modules depend on this one
+    'speedbar.modules.pagetimer',
+    'speedbar.modules.hostinformation',
+    'speedbar.modules.sql',
+    'speedbar.modules.celeryjobs',
+    'speedbar.modules.requeststages',
+    'speedbar.modules.redis',
+    'speedbar.modules.memcache',
+    'speedbar.modules.haystack',
 ]
 
 # A module comprises of two parts, both of which are optional. It may have an init() function which is called once

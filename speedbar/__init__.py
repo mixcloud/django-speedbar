@@ -17,8 +17,8 @@ signal handler stores detailed information to memcache which can then be retriev
 """
 from django.core.signals import request_started, request_finished
 from django.conf import settings
-from mixcloud.speedbar.signals import setup_request_tracing, store_request_trace
-from mixcloud.speedbar.utils import init_modules
+from speedbar.signals import setup_request_tracing, store_request_trace
+from speedbar.utils import init_modules
 
 if getattr(settings, 'SPEEDBAR_ENABLE', True):
     init_modules()

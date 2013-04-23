@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.core.cache import cache
 from django.contrib.admin.views.decorators import staff_member_required
-from mixcloud.speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX
+from speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX
 from gargoyle.decorators import switch_is_active
 
 import json
