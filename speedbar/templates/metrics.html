@@ -1,0 +1,24 @@
+{% load speedbar %}
+
+{% if request.user.is_staff %}
+    <div id="staff-diagnostics-panel" class="collapsed">
+        <div class="tab">
+            {% metric "host" "name" %}:
+            {% metric "overall" "time" %} ms
+            <span class="divider"> | </span>
+            Queries: {% metric "sql" "count" %} ({% metric "sql" "time" %} ms)
+            <span class="divider"> | </span>
+            Redis: {% metric "redis" "count" %} ({% metric "redis" "time" %} ms)
+            <span class="divider"> | </span>
+            Memcache: {% metric "memcache" "count" %} ({% metric "memcache" "time" %} ms)
+            <span class="divider"> | </span>
+            Haystack: {% metric "haystack" "count" %} ({% metric "haystack" "time" %} ms)
+            <span class="divider"> | </span>
+            Celery: {% metric "celery" "count" %} ({% metric "celery" "time" %} ms)
+        </div>
+        <div class="body">
+        </div>
+    </div>
+
+    {% speedbar_script %}
+{% endif %}
