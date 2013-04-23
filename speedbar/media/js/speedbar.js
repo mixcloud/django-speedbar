@@ -2,9 +2,9 @@
 $(function() {
     var expanded = false;
     var have_contents = false;
-    var $staff_diagnostics_panel = $('#staff-diagnostics-panel');
-    var $body = $('.body', $staff_diagnostics_panel);
-    var $tab = $('.tab', $staff_diagnostics_panel);
+    var $speedbar_panel = $('#speedbar-panel');
+    var $body = $('.body', $speedbar_panel);
+    var $tab = $('.tab', $speedbar_panel);
     $tab.click(function() {
         if(!have_contents) {
             $.get(_speedbar_panel_url, function(data) {

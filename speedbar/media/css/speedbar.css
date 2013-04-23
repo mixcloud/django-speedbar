@@ -1,4 +1,4 @@
-#staff-diagnostics-panel {
+#speedbar-panel {
     position: fixed;
     left: 30px;
     right: 30px;
@@ -7,7 +7,7 @@
     text-align: right;
 }
 
-#staff-diagnostics-panel .tab {
+#speedbar-panel .tab {
     position: relative;
     display: inline-block;
 
@@ -28,7 +28,7 @@
     z-index: 950;
 }
 
-#staff-diagnostics-panel .body {
+#speedbar-panel .body {
     position: relative;
     text-align: left;
     display: none;
@@ -47,7 +47,7 @@
     font-family: monospace;
 }
 
-#staff-diagnostics-panel .tab .divider {
+#speedbar-panel .tab .divider {
     color: #ccc;
     font-weight: normal;
 }

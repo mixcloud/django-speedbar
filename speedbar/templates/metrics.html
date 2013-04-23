@@ -1,7 +1,7 @@
 {% load speedbar %}
 
 {% if request.user.is_staff %}
-    <div id="staff-diagnostics-panel" class="collapsed">
+    <div id="speedbar-panel" class="collapsed">
         <div class="tab">
             {% metric "host" "name" %}:
             {% metric "overall" "time" %} ms
