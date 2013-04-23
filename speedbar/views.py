@@ -1,13 +1,12 @@
 from django.http import HttpResponse
 from django.core.cache import cache
-from mixcloud.utils.decorators import staff_only
+from django.contrib.admin.views.decorators import staff_member_required
 from mixcloud.speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX
-from mixcloud.utils.decorators import json_response
 from gargoyle.decorators import switch_is_active
 
 import json
 
-@staff_only
+@staff_member_required
 @switch_is_active('speedbar:panel')
 def panel(request, trace_id):
     details = cache.get(DETAILS_PREFIX + trace_id)
@@ -16,11 +15,10 @@ def panel(request, trace_id):
         return HttpResponse(content=details_json, mimetype='text/javascript; charset=utf-8')
     return HttpResponse(status=404)
 
-@staff_only
+@staff_member_required
 @switch_is_active('speedbar:trace')
-@json_response
 def trace(request, trace_id):
     trace = cache.get(TRACE_PREFIX + trace_id)
     if trace:
-        return trace
+        return HttpResponse(json.dumps(trace))
     return HttpResponse(status=404)
