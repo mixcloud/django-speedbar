@@ -14,6 +14,7 @@ SPEEDBAR_MODULES = [
     'speedbar.modules.redis',
     'speedbar.modules.memcache',
     'speedbar.modules.haystack',
+    'speedbar.modules.cassandra',
 ]
 
 # A module comprises of two parts, both of which are optional. It may have an init() function which is called once
