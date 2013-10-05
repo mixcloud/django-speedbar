@@ -5,8 +5,6 @@ from django.utils.html import escapejs
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from gargoyle import gargoyle
-
 import re
 
 HTML_TYPES = ('text/html', 'application/xhtml+xml')
@@ -42,13 +40,13 @@ class SpeedbarMiddleware(object):
                 # Note: The URLs returned here do not exist at this point. The relevant data is added to the cache by a signal handler
                 # once all page processing is finally done. This means it is possible summary values displayed and the detailed
                 # break down won't quite correspond.
-                if gargoyle.is_active('speedbar:panel', request):
+                if getattr(settings, 'SPEEDBAR_PANEL', True):
                     panel_url = reverse('speedbar_panel', args=[request_trace.id])
                     content = content.replace(
                         u'<script data-speedbar-panel-url-placeholder></script>',
                         u'<script>var _speedbar_panel_url = "%s";</script>' % (escapejs(panel_url),))
                     request_trace.persist_details = True
-                if gargoyle.is_active('speedbar:trace', request):
+                if getattr(settings, 'SPEEDBAR_TRACE', True):
                     response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
                     request_trace.persist_log = True
 
