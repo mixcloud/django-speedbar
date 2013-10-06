@@ -52,8 +52,7 @@ tag.
 Configuration
 -----
 
-django-speedbar has a number of configuration settings. Everything defaults
-to turned on.
+django-speedbar has a number of configuration settings.
 
 ::
     # Enable instrumentation of page load process
@@ -65,6 +64,12 @@ to turned on.
     # Include headers needed to show page generation profile tree in the
     # Google Chrome SpeedTracer plugin.
     SPEEDBAR_TRACE = True
+
+    # Include response headers with summary data for each request. These are
+    # intended for logging and are included in all requests, not just staff
+    # requests. If you turn this on we recommend configuring your load
+    # balancer to strip them before sending the response to the client.
+    SPEEDBAR_RESPONSE_HEADERS = False
 
     # Configure which instrumentation modules to load. This should not
     # normally be necessary for built in modules as they will only load

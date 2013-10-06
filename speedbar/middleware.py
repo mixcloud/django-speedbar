@@ -25,7 +25,8 @@ class SpeedbarMiddleware(object):
         request_trace = RequestTrace.instance()
         metrics = dict((key, module.get_metrics()) for key, module in request_trace.modules.items())
 
-        self.add_response_headers(response, metrics)
+        if getattr(settings, 'SPEEDBAR_RESPONSE_HEADERS', False):
+            self.add_response_headers(response, metrics)
 
         if hasattr(request, 'user') and request.user.is_staff:
             if 'gzip' not in response.get('Content-Encoding', '') and response.get('Content-Type', '').split(';')[0] in HTML_TYPES:
