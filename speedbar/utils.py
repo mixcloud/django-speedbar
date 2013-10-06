@@ -20,7 +20,7 @@ SPEEDBAR_MODULES = [
 # A module comprises of two parts, both of which are optional. It may have an init() function which is called once
 # on server startup, and it may have a class called Module which is instantiated once per request.
 
-loaded_modules = [import_module(m) for m in getattr(settings, 'SPEEDBAR_MODULES', SPEEDBAR_MODULES)]
+loaded_modules = []
 
 modules_initialised = False
 def init_modules():
@@ -32,6 +32,8 @@ def init_modules():
         return
     modules_initialised = True
 
-    for module in loaded_modules:
-        if hasattr(module, 'init'):
-            module.init()
+    for module_name in getattr(settings, 'SPEEDBAR_MODULES', SPEEDBAR_MODULES):
+        python_module = import_module(module_name)
+        speedbar_module = python_module.init()
+        if speedbar_module:
+            loaded_modules.append(speedbar_module)

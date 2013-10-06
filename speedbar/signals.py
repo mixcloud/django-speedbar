@@ -5,7 +5,7 @@ from speedbar.modules.base import RequestTrace
 DETAILS_CACHE_TIME = 60 * 30 # 30 minutes
 
 def setup_request_tracing(sender, **kwargs):
-    RequestTrace(module.Module() for module in loaded_modules if hasattr(module, 'Module'))
+    RequestTrace(module() for module in loaded_modules)
     RequestTrace.instance().stacktracer.push_stack('HTTP', '')
 
 

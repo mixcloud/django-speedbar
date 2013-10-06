@@ -9,7 +9,7 @@ from .stacktracer import trace_method
 
 ENTRY_TYPE = 'CELERY'
 
-class Module(BaseModule):
+class CeleryModule(BaseModule):
     key = 'celery'
 
     def get_metrics(self):
@@ -28,3 +28,5 @@ def init():
     #trace_method(AppTask)(apply_async)
     #trace_method(CeleryTask)(apply_async)
     trace_method(TaskTask)(apply_async)
+
+    return CeleryModule

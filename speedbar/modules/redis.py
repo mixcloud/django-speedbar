@@ -4,7 +4,7 @@ from .stacktracer import trace_method
 
 from redis import StrictRedis
 
-class Module(BaseModule):
+class RedisModule(BaseModule):
     key = 'redis'
 
     def get_metrics(self):
@@ -27,3 +27,5 @@ def init():
             action = 'Redis: %s' % args[:1]
             key = ''
         return ('REDIS', action, {'operation': args[0], 'key': key})
+
+    return RedisModule

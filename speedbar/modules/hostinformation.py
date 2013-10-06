@@ -3,8 +3,12 @@ from .base import BaseModule
 
 import os
 
-class Module(BaseModule):
+class HostInformationModule(BaseModule):
     key = 'host'
 
     def get_metrics(self):
         return {'name': os.uname()[1]}
+
+
+def init():
+    return HostInformationModule

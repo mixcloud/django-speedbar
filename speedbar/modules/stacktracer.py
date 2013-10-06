@@ -108,8 +108,6 @@ class StackTracer(BaseModule):
         self.stack_id += 1
         return self.stack_id
 
-Module = StackTracer
-
 
 # The linter thinks the methods we monkeypatch are not used
 # pylint: disable=W0612
@@ -150,3 +148,7 @@ def trace_function(func, info):
     except Exception:
         # If we can't wrap for any reason, just return the original
         return func
+
+
+def init():
+    return StackTracer

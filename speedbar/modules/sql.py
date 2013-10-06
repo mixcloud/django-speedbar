@@ -6,11 +6,11 @@ from .base import BaseModule, RequestTrace
 from .monkey_patching import monkeypatch_method
 
 
-class Module(BaseModule):
+class SqlModule(BaseModule):
     key = 'sql'
 
     def __init__(self):
-        super(Module, self).__init__()
+        super(SqlModule, self).__init__()
         self.queries = []
 
     def get_metrics(self):
@@ -54,3 +54,5 @@ def init():
     def cursor(original, self, *args, **kwargs):
         result = original(*args, **kwargs)
         return _DetailedTracingCursorWrapper(result, self)
+
+    return SqlModule

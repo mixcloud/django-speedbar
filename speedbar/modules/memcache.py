@@ -8,7 +8,7 @@ MEMCACHE_OPERATIONS = [ 'add', 'append', 'cas', 'decr', 'delete', 'get', 'gets',
 MEMCACHE_MULTI_OPERATIONS = [ 'get_multi', 'set_multi', 'delete_multi', ]
 
 
-class Module(BaseModule):
+class MemcacheModule(BaseModule):
     key = 'memcache'
 
     def get_metrics(self):
@@ -39,3 +39,5 @@ def init():
 
     for operation in MEMCACHE_MULTI_OPERATIONS:
         intercept_memcache_multi_operation(operation)
+
+    return MemcacheModule

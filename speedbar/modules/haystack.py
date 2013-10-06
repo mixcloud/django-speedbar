@@ -8,7 +8,7 @@ from .stacktracer import trace_method
 
 ENTRY_TYPE='haystack'
 
-class Module(BaseModule):
+class HaystackModule(BaseModule):
     key = 'haystack'
 
     def get_metrics(self):
@@ -55,3 +55,5 @@ def init():
         pass
     else:
         trace_method(WhooshSearchBackend)(search)
+
+    return HaystackModule

@@ -6,7 +6,7 @@ from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
 
 
-class Module(BaseModule):
+class CassandraModule(BaseModule):
     key = 'cassandra'
 
     def get_metrics(self):
@@ -23,3 +23,5 @@ def init():
     @trace_method(Session)
     def execute(self, query, parameters=None, *args, **kwargs):
         return ('CASSANDRA', query, {})
+
+    return CassandraModule
