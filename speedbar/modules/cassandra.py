@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 
-from cassandra.cluster import Session
+try:
+    from cassandra.cluster import Session
+except ImportError:
+    Session = None
 
 from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
@@ -18,6 +21,9 @@ class CassandraModule(BaseModule):
 
 
 def init():
+    if Session is None:
+        return False
+
     # The linter thinks the methods we monkeypatch are not used
     # pylint: disable=W0612
     @trace_method(Session)

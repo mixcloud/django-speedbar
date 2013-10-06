@@ -1,6 +1,11 @@
 from __future__ import absolute_import
 
-from haystack.exceptions import MissingDependency
+try:
+    import haystack
+    from haystack.exceptions import MissingDependency
+except ImportError:
+    haystack = None
+    MissingDependency = None
 
 from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
@@ -19,6 +24,9 @@ class HaystackModule(BaseModule):
         return [{'query_string': node.extra['query_string'], 'kwargs': node.extra['kwargs'], 'time': node.duration} for node in redis_nodes]
 
 def init():
+    if haystack is None:
+        return False
+
     def search(self, query_string, *args, **kwargs):
         models = kwargs.get('models', None)
         if models:

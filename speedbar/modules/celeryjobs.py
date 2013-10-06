@@ -1,8 +1,11 @@
 from __future__ import absolute_import
 
-#from celery.app.task import Task as AppTask
-from celery.task import Task as TaskTask
-#from celery import Task as CeleryTask
+try:
+    #from celery.app.task import Task as AppTask
+    from celery.task import Task as TaskTask
+    #from celery import Task as CeleryTask
+except ImportError:
+    TaskTask = None
 
 from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
@@ -21,6 +24,9 @@ class CeleryModule(BaseModule):
 
 
 def init():
+    if TaskTask is None:
+        return False
+
     def apply_async(self, args=None, kwargs=None, *_args, **_kwargs):
         return (ENTRY_TYPE, 'Celery: %s' % (self.__name__,), {'type': self.__name__, 'args': args, 'kwargs': kwargs})
     # Celery has various legacy ways of getting to the task object, which python

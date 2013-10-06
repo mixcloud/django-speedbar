@@ -2,7 +2,10 @@ from __future__ import absolute_import
 from .base import BaseModule, RequestTrace
 from .stacktracer import trace_method
 
-import memcache
+try:
+    import memcache
+except ImportError:
+    memcache = None
 
 MEMCACHE_OPERATIONS = [ 'add', 'append', 'cas', 'decr', 'delete', 'get', 'gets', 'incr', 'prepend', 'replace', 'set', ]
 MEMCACHE_MULTI_OPERATIONS = [ 'get_multi', 'set_multi', 'delete_multi', ]
@@ -34,6 +37,9 @@ def intercept_memcache_multi_operation(operation):
 
 
 def init():
+    if memcache is None:
+        return False
+
     for operation in MEMCACHE_OPERATIONS:
         intercept_memcache_operation(operation)
 
