@@ -1,3 +1,4 @@
+=====
 django-speedbar - Page performance profiling for django
 =====
 
@@ -14,7 +15,7 @@ with the staff flag.
 
 
 Installation
------
+=====
 
 To install django-speedbar add it to your installed apps and add the
 speedbar middleware.
@@ -50,7 +51,7 @@ tag.
     </div>
 
 Configuration
------
+=====
 
 django-speedbar has a number of configuration settings.
 
@@ -82,3 +83,40 @@ django-speedbar has a number of configuration settings.
         'myproject.modules.sprockets',
         # ...
     ]
+
+
+Similar projects
+=====
+
+There are a number of similar projects you may want to consider as well as
+or instead of django-speedbar.
+
+django-debug-toolbar
+-----
+Website: `<https://github.com/django-debug-toolbar/django-debug-toolbar>`_.
+
+The swiss army knife of django page inspection. Mature, widely used, and
+with lots of plugins available. It has more of a focus on debugging and
+information, and less focus on performance measurement. We found it too
+slow to run on our sites in production.
+
+New Relic
+----
+Website: `<http://newrelic.com/>`_.
+
+An in depth application monitoring platform. Very useful for observing
+trends in application performance and page load times. Less useful for
+drilling deep into individual page loads, and has support for a smaller
+set of external services. Commercial product.
+
+django-live-profiler
+-----
+Website: `<http://invitebox.github.io/django-live-profiler/>`_.
+
+Site wide profiler for django applications. I haven't used this, so
+cannot comment on it.
+
+
+Credits
+=====
+django-speedbar was primarily written by Theo Spears whilst working at `Mixcloud <http://www.mixcloud.com/>`_.
