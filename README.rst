@@ -1,7 +1,7 @@
 django-speedbar - Page performance profiling for django
 =====
 
-<put some screenshots here>
+.. image:: https://github.com/theospears/django-speedbar/raw/master/docs/images/chrome-speedtracer.png
 
 django-speedbar instruments key events in the page loading process (database
 queries, template rendering, url resolution, etc) and provides summary
