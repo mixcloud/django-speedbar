@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from django.core import urlresolvers
 from django.template.base import Template
 from django.template.response import TemplateResponse
+from django.template.loader_tags import BlockNode
 from django.core.handlers.base import BaseHandler
 from django.core.handlers.wsgi import WSGIHandler
 
@@ -107,6 +108,10 @@ def intercept_template_methods():
     @trace_method(Template)
     def render(self, *args, **kwargs):
         return ('TEMPLATE_RENDER', 'Render template: ' + self.name, {})
+
+    @trace_method(BlockNode)
+    def render(self, *args, **kwargs):
+        return ('BLOCK_RENDER', 'Render block: ' + self.name, {})
 
     @trace_method(TemplateResponse)
     def resolve_context(self, *args, **kwargs):
