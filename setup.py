@@ -29,4 +29,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
+    install_requires = [
+        'ProxyTypes>=0.9',
+        'Django >=1.5, <1.6a0',
+    ],
 )
