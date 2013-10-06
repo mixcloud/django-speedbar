@@ -20,7 +20,8 @@ Installation
 To install django-speedbar add it to your installed apps and add the
 speedbar middleware.
 
-::
+.. code:: python
+
     INSTALLED_APPS = [
         # ...
         'speedbar',
@@ -42,7 +43,8 @@ To view the results in SpeedTracer you will also need to install the
 To include summary information in the page you can use the ``metric`` template
 tag.
 
-.. raw:: html
+.. code:: html
+
     {% load speedbar %}
     <div class="speedbar">
         <span>Overall: {% metric "overall" "time" %} ms</span>
@@ -55,7 +57,8 @@ Configuration
 
 django-speedbar has a number of configuration settings.
 
-::
+.. code:: python
+
     # Enable instrumentation of page load process
     SPEEDBAR_ENABLE = True
 
@@ -93,7 +96,7 @@ or instead of django-speedbar.
 
 django-debug-toolbar
 -----
-Website: `<https://github.com/django-debug-toolbar/django-debug-toolbar>`_.
+Website: `<https://github.com/django-debug-toolbar/django-debug-toolbar>`_
 
 The swiss army knife of django page inspection. Mature, widely used, and
 with lots of plugins available. It has more of a focus on debugging and
@@ -102,7 +105,7 @@ slow to run on our sites in production.
 
 New Relic
 ----
-Website: `<http://newrelic.com/>`_.
+Website: `<http://newrelic.com/>`_
 
 An in depth application monitoring platform. Very useful for observing
 trends in application performance and page load times. Less useful for
@@ -111,7 +114,7 @@ set of external services. Commercial product.
 
 django-live-profiler
 -----
-Website: `<http://invitebox.github.io/django-live-profiler/>`_.
+Website: `<http://invitebox.github.io/django-live-profiler/>`_
 
 Site wide profiler for django applications. I haven't used this, so
 cannot comment on it.
