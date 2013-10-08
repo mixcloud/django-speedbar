@@ -29,6 +29,10 @@ class SpeedbarMiddleware(object):
             self.add_response_headers(response, metrics)
 
         if hasattr(request, 'user') and request.user.is_staff:
+            if getattr(settings, 'SPEEDBAR_TRACE', True):
+                response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
+                request_trace.persist_log = True
+
             if 'gzip' not in response.get('Content-Encoding', '') and response.get('Content-Type', '').split(';')[0] in HTML_TYPES:
 
                 # Force render of response (from lazy TemplateResponses) before speedbar is injected
@@ -47,9 +51,6 @@ class SpeedbarMiddleware(object):
                         u'<script data-speedbar-panel-url-placeholder></script>',
                         u'<script>var _speedbar_panel_url = "%s";</script>' % (escapejs(panel_url),))
                     request_trace.persist_details = True
-                if getattr(settings, 'SPEEDBAR_TRACE', True):
-                    response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
-                    request_trace.persist_log = True
 
                 response.content = smart_str(content)
                 if response.get('Content-Length', None):
