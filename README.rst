@@ -17,10 +17,12 @@ with the staff flag.
 Installation
 =====
 
-To install django-speedbar add it to your installed apps and add the
+To install django-speedbar add it to your installed apps, urls, and add the
 speedbar middleware.
 
 .. code:: python
+
+   # settings.py
 
     INSTALLED_APPS = [
         # ...
@@ -36,6 +38,17 @@ speedbar middleware.
         'speedbar.middleware.SpeedbarMiddleware',
         # ...
     ]
+
+.. code:: python
+
+    # urls.py
+
+    urlpatterns = patterns('',
+        # ...
+        (r'^speedbar/', include('speedbar.urls')),
+        # ...
+    )
+
 
 To view the results in SpeedTracer you will also need to install the
 `SpeedTracer plugin <https://developers.google.com/web-toolkit/speedtracer/>`_.
