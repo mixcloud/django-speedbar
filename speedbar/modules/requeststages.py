@@ -1,15 +1,12 @@
 from __future__ import absolute_import
 
 from django.core import urlresolvers
-from django.template.base import Template
-from django.template.response import TemplateResponse
-from django.template.loader_tags import BlockNode
 from django.core.handlers.base import BaseHandler
 from django.core.handlers.wsgi import WSGIHandler
 
 from .base import RequestTrace
 from .monkey_patching import monkeypatch_method
-from .stacktracer import trace_method, trace_function
+from .stacktracer import trace_function
 
 import traceback
 
@@ -99,26 +96,6 @@ def intercept_resolver_and_view():
     urlresolvers.RegexURLResolver = ProxyRegexURLResolver
 
 
-def intercept_template_methods():
-    @trace_method(Template)
-    def __init__(self, *args, **kwargs):
-        name = args[2] if len(args) >= 3 else '<Unknown Template>'
-        return ('TEMPLATE_COMPILE', 'Compile template: ' + name, {})
-
-    @trace_method(Template)
-    def render(self, *args, **kwargs):
-        return ('TEMPLATE_RENDER', 'Render template: ' + self.name, {})
-
-    @trace_method(BlockNode)
-    def render(self, *args, **kwargs):
-        return ('BLOCK_RENDER', 'Render block: ' + self.name, {})
-
-    @trace_method(TemplateResponse)
-    def resolve_context(self, *args, **kwargs):
-        return ('TEMPLATE_CONTEXT', 'Resolve context', {})
-
-
 def init():
     intercept_middleware()
     intercept_resolver_and_view()
-    intercept_template_methods()

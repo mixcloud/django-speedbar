@@ -11,6 +11,7 @@ SPEEDBAR_MODULES = [
     'speedbar.modules.sql',
     'speedbar.modules.celeryjobs',
     'speedbar.modules.requeststages',
+    'speedbar.modules.templates',
     'speedbar.modules.redis',
     'speedbar.modules.memcache',
     'speedbar.modules.haystack',
