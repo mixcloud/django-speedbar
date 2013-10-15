@@ -37,9 +37,9 @@ class StackEntry(object):
         return {
             'id': str(self.entry_id),
             'range': {
-                'start': int(self.start*1000),
-                'end': int(self.end*1000),
-                'duration': int(self.duration*1000),
+                'start': round(self.start * 1000, 1),
+                'end': round(self.end * 1000, 1),
+                'duration': round(self.duration * 1000, 1),
             },
             'operation' : {
                 'type': self.entry_type,
