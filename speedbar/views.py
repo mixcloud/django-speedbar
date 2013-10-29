@@ -19,3 +19,7 @@ def trace(request, trace_id):
     if trace:
         return HttpResponse(json.dumps(trace))
     return HttpResponse(status=404)
+
+
+def noop():
+    pass
