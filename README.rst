@@ -100,6 +100,12 @@ django-speedbar has a number of configuration settings.
         # ...
     ]
 
+Status
+=====
+
+We run our production systems with django-speedbar installed. However, the API
+is not stable and is likely to change. It does not yet have any default
+templates to make it easier to use the on-page features.
 
 Similar projects
 =====
