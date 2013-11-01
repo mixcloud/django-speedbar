@@ -47,9 +47,6 @@ class SpeedbarMiddleware(object):
                 # break down won't quite correspond.
                 if getattr(settings, 'SPEEDBAR_PANEL', True):
                     panel_url = reverse('speedbar_panel', args=[request_trace.id])
-                    content = content.replace(
-                        u'<script data-speedbar-panel-url-placeholder></script>',
-                        u'<script>var _speedbar_panel_url = "%s";</script>' % (escapejs(panel_url),))
                     panel_placeholder_url = reverse('speedbar_details_for_this_request')
                     content = content.replace(panel_placeholder_url, panel_url)
                     request_trace.persist_details = True
