@@ -23,7 +23,6 @@ class SqlModule(BaseModule):
 
 class _DetailedTracingCursorWrapper(CursorWrapper):
     def execute(self, sql, params=()):
-        self.set_dirty()
         request_trace = RequestTrace.instance()
         if request_trace:
             stack_entry = request_trace.stacktracer.push_stack('SQL', sql)
@@ -36,7 +35,6 @@ class _DetailedTracingCursorWrapper(CursorWrapper):
                 stack_entry.label = sql
 
     def executemany(self, sql, param_list):
-        self.set_dirty()
         request_trace = RequestTrace.instance()
         if request_trace:
             request_trace.stacktracer.push_stack('SQL', sql)
