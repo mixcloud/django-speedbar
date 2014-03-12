@@ -1,26 +1,21 @@
 from uuid import uuid4
+import threading
 
-try:
-    from greenlet import getcurrent as get_ident
-except ImportError:
-    from thread import get_ident
 
 class ThreadLocalSingleton(object):
     def __init__(self):
         if not hasattr(self.__class__, '_thread_lookup'):
-            self.__class__._thread_lookup = dict()
-        self.__class__._thread_lookup[get_ident()] = self
+            self.__class__._thread_lookup = threading.local()
+        self.__class__._thread_lookup.instance = self
 
     def release(self):
-        thread_id = get_ident()
-        if self.__class_._thread_lookup[thread_id] == self:
-            del self.__class_._thread_lookup[thread_id]
+        if getattr(self.__class_._thread_lookup, 'instance', None) is self:
+            self.__class_._thread_lookup.instance = None
 
     @classmethod
     def instance(cls):
-        if not hasattr(cls, '_thread_lookup'):
-            cls._thread_lookup = dict()
-        return cls._thread_lookup.get(get_ident(), None)
+        if hasattr(cls, '_thread_lookup'):
+            return getattr(cls._thread_lookup, 'instance', None)
 
 
 class RequestTrace(ThreadLocalSingleton):
