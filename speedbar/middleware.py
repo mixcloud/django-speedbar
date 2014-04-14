@@ -92,7 +92,7 @@ class SpeedbarMiddleware(object):
 
         for module, module_values in metrics.items():
             for key, value in module_values.items():
-                response['X-Mixcloud-%s-%s' % (sanitize(module), sanitize(key))] = value
+                response['X-Speedbar-%s-%s' % (sanitize(module), sanitize(key))] = value
 
     def replace_templatetag_placeholders(self, content, metrics):
         """
