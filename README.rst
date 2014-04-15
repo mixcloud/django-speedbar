@@ -1,6 +1,6 @@
-=====
+=======================================================
 django-speedbar - Page performance profiling for django
-=====
+=======================================================
 
 .. image:: https://github.com/theospears/django-speedbar/raw/master/docs/images/chrome-speedtracer.png
 
@@ -15,7 +15,7 @@ with the staff flag.
 
 
 Installation
-=====
+============
 
 To install django-speedbar add it to your installed apps, urls, and add the
 speedbar middleware.
@@ -66,7 +66,7 @@ tag.
     </div>
 
 Configuration
-=====
+=============
 
 django-speedbar has a number of configuration settings.
 
@@ -101,20 +101,20 @@ django-speedbar has a number of configuration settings.
     ]
 
 Status
-=====
+======
 
 We run our production systems with django-speedbar installed. However, the API
 is not stable and is likely to change. It does not yet have any default
 templates to make it easier to use the on-page features.
 
 Similar projects
-=====
+================
 
 There are a number of similar projects you may want to consider as well as
 or instead of django-speedbar.
 
 django-debug-toolbar
------
+--------------------
 Website: `<https://github.com/django-debug-toolbar/django-debug-toolbar>`_
 
 The swiss army knife of django page inspection. Mature, widely used, and
@@ -123,7 +123,7 @@ information, and less focus on performance measurement. We found it too
 slow to run on our sites in production.
 
 New Relic
-----
+---------
 Website: `<http://newrelic.com/>`_
 
 An in depth application monitoring platform. Very useful for observing
@@ -132,7 +132,7 @@ drilling deep into individual page loads, and has support for a smaller
 set of external services. Commercial product.
 
 django-live-profiler
------
+--------------------
 Website: `<http://invitebox.github.io/django-live-profiler/>`_
 
 Site wide profiler for django applications. I haven't used this, so
@@ -140,5 +140,5 @@ cannot comment on it.
 
 
 Credits
-=====
+=======
 django-speedbar was primarily written by Theo Spears whilst working at `Mixcloud <http://www.mixcloud.com/>`_.
