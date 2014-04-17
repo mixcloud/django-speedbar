@@ -43,13 +43,18 @@ METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-m
 class SpeedbarMiddleware(object):
     def process_request(self, request):
         if getattr(settings, 'SPEEDBAR_ENABLE', True):
-            RequestTrace.instance().stacktracer.root.label = '%s %s' % (request.method, request.path)
+            request_trace = RequestTrace.instance()
+            request_trace.stacktracer.root.label = '%s %s' % (request.method, request.path)
+            request_trace.request = request
 
     def process_response(self, request, response):
         if not getattr(settings, 'SPEEDBAR_ENABLE', True):
             return response
 
         request_trace = RequestTrace.instance()
+        # TODO: Do we also need to stash this on in case of exception?
+        request_trace.response = response
+
         metrics = dict((key, module.get_metrics()) for key, module in request_trace.modules.items())
 
         if getattr(settings, 'SPEEDBAR_RESPONSE_HEADERS', False):

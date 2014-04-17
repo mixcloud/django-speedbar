@@ -1,8 +1,13 @@
 from django.core.cache import cache
+from django.dispatch import Signal
 from speedbar.utils import DETAILS_PREFIX, TRACE_PREFIX, loaded_modules
 from speedbar.modules.base import RequestTrace
 
-DETAILS_CACHE_TIME = 60 * 30 # 30 minutes
+DETAILS_CACHE_TIME = 60 * 30  # 30 minutes
+
+
+request_trace_complete = Signal(providing_args=['metrics', 'request', 'response'])
+
 
 def setup_request_tracing(sender, **kwargs):
     RequestTrace(module() for module in loaded_modules)
@@ -24,10 +29,11 @@ def store_request_trace(sender, **kwargs):
         all_details = dict(details for details in details_tuples if details[1] is not None)
     if request_trace.persist_log:
         speedtracer_log = request_trace.stacktracer.speedtracer_log()
+    metrics = dict((key, module.get_metrics()) for key, module in request_trace.modules.items())
 
     if request_trace.persist_details:
         cache.set(DETAILS_PREFIX + request_trace.id, all_details, DETAILS_CACHE_TIME)
     if request_trace.persist_log:
         cache.set(TRACE_PREFIX + request_trace.id, speedtracer_log, DETAILS_CACHE_TIME)
 
-
+    request_trace_complete.send(sender, metrics=metrics, request=request_trace.request, response=request_trace.response)
