@@ -36,4 +36,9 @@ def store_request_trace(sender, **kwargs):
     if request_trace.persist_log:
         cache.set(TRACE_PREFIX + request_trace.id, speedtracer_log, DETAILS_CACHE_TIME)
 
-    request_trace_complete.send(sender, metrics=metrics, request=request_trace.request, response=request_trace.response)
+    request_trace_complete.send(
+        sender,
+        metrics=metrics,
+        request=getattr(request_trace, 'request', None),
+        response=getattr(request_trace, 'response', None)
+    )
