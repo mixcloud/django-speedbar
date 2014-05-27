@@ -1,13 +1,13 @@
-from __future__ import absolute_import
+import socket
+
 from .base import BaseModule
 
-import os
 
 class HostInformationModule(BaseModule):
     key = 'host'
 
     def get_metrics(self):
-        return {'name': os.uname()[1]}
+        return {'name': socket.gethostname()}
 
 
 def init():
