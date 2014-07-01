@@ -69,7 +69,8 @@ def init():
 
     @trace_method(Template)
     def render(self, *args, **kwargs):
-        return ('TEMPLATE_RENDER', 'Render template: ' + self.name, {})
+        name = self.name if self.name is not None else '<Unknown Template>'
+        return ('TEMPLATE_RENDER', 'Render template: ' + name, {})
 
     @trace_method(BlockNode)
     def render(self, *args, **kwargs):
