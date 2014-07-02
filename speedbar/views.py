@@ -10,7 +10,7 @@ def panel(request, trace_id):
     details = cache.get(DETAILS_PREFIX + trace_id)
     if details:
         details_json = json.dumps(details, skipkeys=True, default=repr, indent=2) # Cannot use decorator as need default=repr
-        return HttpResponse(content=details_json, mimetype='text/javascript; charset=utf-8')
+        return HttpResponse(content=details_json, content_type='text/javascript; charset=utf-8')
     return HttpResponse(status=404)
 
 @staff_member_required
