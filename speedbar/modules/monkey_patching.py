@@ -34,6 +34,13 @@ class UnboundMethodProxy(CallableProxy):
     def __get__(self, instance, owner):
         return BoundMethodProxy(self.__subject__.__get__(instance, owner), instance or owner, self._eop_wrapper_)
 
+    def __getattribute__(self, attr, oga=object.__getattribute__):
+        """We need to return our own version of __get__ or we may end up never being called if
+        the member we are wrapping is wrapped again by someone else"""
+        if attr == '__get__':
+            return oga(self, attr)
+        return super(UnboundMethodProxy, self).__getattribute__(attr)
+
 
 def monkeypatch_method(cls, method_name=None):
     def decorator(func):
