@@ -41,6 +41,16 @@ METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-m
 
 
 class SpeedbarMiddleware(object):
+    """
+    Middleware module to add speedbar related headers to respones and replace any
+    speedbar template tags with their correct values.
+    For most accurate results place this as near to the top of your middleware stack
+    as possible.
+
+    If you wish to customize how features are enabled and disabled on a per-request
+    basis you can do so by inheriting from this class and overriding some or all of the
+    should_ methods.
+    """
     def process_request(self, request):
         if getattr(settings, 'SPEEDBAR_ENABLE', True):
             request_trace = RequestTrace.instance()
@@ -57,14 +67,14 @@ class SpeedbarMiddleware(object):
 
         metrics = dict((key, module.get_metrics()) for key, module in request_trace.modules.items())
 
-        if getattr(settings, 'SPEEDBAR_RESPONSE_HEADERS', False):
+        if self.should_return_response_headers(request):
             self.add_response_headers(response, metrics)
 
-        if hasattr(request, 'user') and request.user.is_staff:
-            if getattr(settings, 'SPEEDBAR_TRACE', True):
-                response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
-                request_trace.persist_log = True
+        if self.should_return_trace_header(request):
+            response['X-TraceUrl'] = reverse('speedbar_trace', args=[request_trace.id])
+            request_trace.persist_log = True
 
+        if self.should_replace_template_tags(request):
             if 'gzip' not in response.get('Content-Encoding', '') and response.get('Content-Type', '').split(';')[0] in HTML_TYPES:
 
                 # Force render of response (from lazy TemplateResponses) before speedbar is injected
@@ -87,6 +97,15 @@ class SpeedbarMiddleware(object):
                 if response.get('Content-Length', None):
                     response['Content-Length'] = len(response.content)
         return response
+
+    def should_return_response_headers(self, request):
+        return getattr(settings, 'SPEEDBAR_RESPONSE_HEADERS', False)
+
+    def should_return_trace_header(self, request):
+        return hasattr(request, 'user') and request.user.is_staff and getattr(settings, 'SPEEDBAR_TRACE', True)
+
+    def should_replace_template_tags(self, request):
+        return hasattr(request, 'user') and request.user.is_staff
 
     def add_response_headers(self, response, metrics):
         """
