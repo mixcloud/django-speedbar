@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 try:
-    from django.db.backends.base.creation import BaseDatabaseCreation
+    from django.db.backends.base.base import BaseDatabaseWrapper
 except ImportError:
     # Backwards compatibility for Django <1.8
     from django.db.backends import BaseDatabaseWrapper
