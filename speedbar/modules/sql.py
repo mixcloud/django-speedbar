@@ -1,7 +1,17 @@
 from __future__ import absolute_import
 
-from django.db.backends import BaseDatabaseWrapper
-from django.db.backends.util import CursorWrapper
+try:
+    from django.db.backends.base.base import BaseDatabaseWrapper
+except ImportError:
+    # Backwards compatibility for Django <1.8
+    from django.db.backends import BaseDatabaseWrapper
+
+try:
+    from django.db.backends.utils import CursorWrapper
+except ImportError:
+    # Backwards compatibility for Django <1.9
+    from django.db.backends.util import CursorWrapper
+
 from .base import BaseModule, RequestTrace
 from .monkey_patching import monkeypatch_method
 
