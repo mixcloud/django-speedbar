@@ -1,43 +1,30 @@
-import os
-import re
 from setuptools import setup, find_packages
 
-# allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+tests_require = [
+    'Django>=1.4,<1.9',
+    'django-nose',
+    'nose',
+]
 
-def parse_requirements(file_name):
-    requirements = []
-    for line in open(file_name, 'r').read().split('\n'):
-        if re.match(r'(\s*#)|(\s*$)', line):
-            continue
-        if re.match(r'\s*-e\s+', line):
-            requirements.append(re.sub(r'\s*-e\s+.*#egg=(.*)$', r'\1', line))
-        elif re.match(r'\s*-f\s+', line):
-            pass
-        else:
-            requirements.append(line)
-    return requirements
-
-
-def parse_dependency_links(file_name):
-    dependency_links = []
-    for line in open(file_name, 'r').read().split('\n'):
-        if re.match(r'\s*-[ef]\s+', line):
-            dependency_links.append(re.sub(r'\s*-[ef]\s+', '', line))
-    return dependency_links
-
+install_requires = [
+    'ProxyTypes>=0.9',
+]
 
 setup(
     name='django-speedbar',
     version='0.2.1',
-    packages=find_packages(),
-    include_package_data=True,
-    license='MIT License',
-    description='Provides a break down of page loading time',
-    long_description=open('README.rst').read(),
-    url='http://github.com/mixcloud/django-speedbar',
     author='Mat Clayton',
     author_email='mat@mixcloud.com',
+    url='http://github.com/mixcloud/django-speedbar',
+    description='Provides a break down of page loading time',
+    long_description=open('README.rst').read(),
+    packages=find_packages(exclude=["tests",]),
+    install_requires=install_requires,
+    license='MIT License',
+    tests_require=tests_require,
+    extras_require={'test': tests_require},
+    test_suite="testrunner.runtests",
+    include_package_data=True,
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -50,7 +37,4 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    install_requires=parse_requirements('requirements.txt'),
-    dependency_links=parse_dependency_links('requirements.txt'),
-    test_suite="testrunner.runtests",
 )

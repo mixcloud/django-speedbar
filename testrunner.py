@@ -20,9 +20,11 @@ def runtests():
                         'django.contrib.contenttypes',
                         'django.contrib.sessions',
                         'django.contrib.admin',
-                        'speedbar',),
-        ROOT_URLCONF='speedbar.urls',
+                        'speedbar',
+                        'tests'),
+        ROOT_URLCONF='tests.urls',
         MIDDLEWARE_CLASSES = (
+            'speedbar.middleware.SpeedbarMiddleware',
             'django.contrib.sessions.middleware.SessionMiddleware',
             'django.middleware.csrf.CsrfViewMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -35,7 +37,7 @@ def runtests():
     from django.test.utils import get_runner
     TestRunner = get_runner(settings)
     test_runner = TestRunner(verbosity=1, failfast=False)
-    failures = test_runner.run_tests(['speedbar', ])
+    failures = test_runner.run_tests(['tests', ])
     sys.exit(bool(failures))
 
 
