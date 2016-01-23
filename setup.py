@@ -29,7 +29,7 @@ def parse_dependency_links(file_name):
 
 setup(
     name='django-speedbar',
-    version='0.3.0',
+    version='0.2.1',
     packages=find_packages(),
     include_package_data=True,
     license='MIT License',
