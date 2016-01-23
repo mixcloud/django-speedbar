@@ -1,0 +1,2 @@
+ProxyTypes>=0.9
+django>=1.7
