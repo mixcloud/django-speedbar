@@ -142,3 +142,4 @@ cannot comment on it.
 Credits
 =======
 django-speedbar was primarily written by Theo Spears whilst working at `Mixcloud <http://www.mixcloud.com/>`_.
+

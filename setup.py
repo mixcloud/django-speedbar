@@ -1,23 +1,28 @@
-import os
 from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as file_handle:
-    README = file_handle.read()
+tests_require = [
+    'Django>=1.4,<1.9',
+]
 
-# allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+install_requires = [
+    'ProxyTypes>=0.9',
+]
 
 setup(
     name='django-speedbar',
-    version='0.2.0',
-    packages=find_packages(),
-    include_package_data=True,
-    license='MIT License',
+    version='0.2.1',
+    author='Mat Clayton',
+    author_email='mat@mixcloud.com',
+    url='http://github.com/mixcloud/django-speedbar',
     description='Provides a break down of page loading time',
-    long_description=README,
-    url='http://github.com/theospears/django-speedbar',
-    author='Theo Spears',
-    author_email='theo@mixcloud.com',
+    long_description=open('README.rst').read(),
+    packages=find_packages(exclude=["tests",]),
+    install_requires=install_requires,
+    license='MIT License',
+    tests_require=tests_require,
+    extras_require={'test': tests_require},
+    test_suite="testrunner.runtests",
+    include_package_data=True,
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -29,9 +34,5 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-    ],
-    install_requires=[
-        'ProxyTypes>=0.9',
-        'Django >=1.5, <1.9',
     ],
 )

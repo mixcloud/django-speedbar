@@ -1,5 +1,10 @@
-from django.utils.importlib import import_module
 from django.conf import settings
+
+try:
+    from importlib import import_module
+except ImportError:
+    # Used for python2.6 and if Django also 1.8
+    from django.utils.importlib import import_module
 
 DETAILS_PREFIX='speedbar:details:'
 TRACE_PREFIX='speedbar:trace:'
@@ -22,8 +27,9 @@ SPEEDBAR_MODULES = [
 # on server startup, and it may have a class called Module which is instantiated once per request.
 
 loaded_modules = []
-
 modules_initialised = False
+
+
 def init_modules():
     """
     Run the init function for all modules which have one

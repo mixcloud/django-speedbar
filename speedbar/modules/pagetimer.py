@@ -3,6 +3,7 @@ from .base import BaseModule
 
 import time
 
+
 class PageTimerModule(BaseModule):
     key = 'overall'
 
