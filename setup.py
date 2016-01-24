@@ -2,8 +2,6 @@ from setuptools import setup, find_packages
 
 tests_require = [
     'Django>=1.4,<1.9',
-    'django-nose',
-    'nose',
 ]
 
 install_requires = [
