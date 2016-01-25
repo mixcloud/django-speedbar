@@ -2,7 +2,8 @@
 django-speedbar - Page performance profiling for django
 =======================================================
 
-[ ![Codeship Status for mixcloud/django-speedbar](https://codeship.com/projects/72818310-a428-0133-4c94-120ced3a4ed3/status?branch=master)](https://codeship.com/projects/129380)
+.. image:: https://codeship.com/projects/72818310-a428-0133-4c94-120ced3a4ed3/status?branch=master
+   :target: https://codeship.com/projects/129380
 
 .. image:: https://github.com/theospears/django-speedbar/raw/master/docs/images/chrome-speedtracer.png
 
