@@ -10,7 +10,7 @@ install_requires = [
 
 setup(
     name='django-speedbar',
-    version='0.2.1',
+    version='0.2.2',
     author='Mat Clayton',
     author_email='mat@mixcloud.com',
     url='http://github.com/mixcloud/django-speedbar',
