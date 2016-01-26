@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from django.utils.html import format_html
 from django import template
 register = template.Library()
 
@@ -8,4 +9,4 @@ def metric(module, metric):
     """
     Display a placeholder that the middleware converts to a particular summary metric
     """
-    return '<span data-module="%s" data-metric="%s"></span>' % (module, metric)
+    return format_html(u'<span data-module="{0}" data-metric="{1}"></span>', module, metric)
