@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 tests_require = [
-    'Django>=1.4,<1.9',
+    'Django>=1.4,<1.11',
     'tox>=2.3.1,<3.0.0',
 ]
 
