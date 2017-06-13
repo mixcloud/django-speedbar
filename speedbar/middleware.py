@@ -17,6 +17,13 @@ signal handler stores detailed information to memcache which can then be retriev
 """
 import re
 
+try:
+    # for Django >= 1.10
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    # for Django < 1.10
+    MiddlewareMixin = object
+
 from django.conf import settings
 from django.core.signals import request_started, request_finished
 from django.core.urlresolvers import reverse
@@ -40,7 +47,7 @@ HTML_TYPES = ('text/html', 'application/xhtml+xml')
 METRIC_PLACEHOLDER_RE = re.compile('<span data-module="(?P<module>[^"]+)" data-metric="(?P<metric>[^"]+)"></span>')
 
 
-class SpeedbarMiddleware(object):
+class SpeedbarMiddleware(MiddlewareMixin):
     """
     Middleware module to add speedbar related headers to respones and replace any
     speedbar template tags with their correct values.
