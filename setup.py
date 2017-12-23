@@ -6,12 +6,12 @@ tests_require = [
 ]
 
 install_requires = [
-    'ProxyTypes>=0.9',
+    'wrapt>=1.10.11',
 ]
 
 setup(
     name='django-speedbar',
-    version='0.2.2',
+    version='0.3.0',
     author='Mat Clayton',
     author_email='mat@mixcloud.com',
     url='http://github.com/mixcloud/django-speedbar',
