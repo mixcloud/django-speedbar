@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from collections import defaultdict
 
 from .base import BaseModule, RequestTrace
-from .monkey_patching import monkeypatch_method, CallableProxy
+from .monkey_patching import monkeypatch_method, BoundCallableWrapper
 
 import time
 
@@ -144,7 +144,7 @@ def trace_function(func, info):
             finally:
                 if request_trace:
                     request_trace.stacktracer.pop_stack()
-        return CallableProxy(func, tracing_function)
+        return BoundCallableWrapper(func, tracing_function)
     except Exception:
         # If we can't wrap for any reason, just return the original
         return func
