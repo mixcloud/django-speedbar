@@ -27,7 +27,7 @@ except ImportError:
 from django.conf import settings
 from django.core.signals import request_started, request_finished
 from django.core.urlresolvers import reverse
-from django.utils.encoding import smart_unicode, smart_str
+from django.utils.encoding import smart_text, smart_bytes
 
 from speedbar.signals import setup_request_tracing, store_request_trace
 from speedbar.utils import init_modules
@@ -87,7 +87,7 @@ class SpeedbarMiddleware(MiddlewareMixin):
                 # Force render of response (from lazy TemplateResponses) before speedbar is injected
                 if hasattr(response, 'render'):
                     response.render()
-                content = smart_unicode(response.content)
+                content = smart_text(response.content)
 
                 content = self.replace_templatetag_placeholders(content, metrics)
 
@@ -100,7 +100,7 @@ class SpeedbarMiddleware(MiddlewareMixin):
                     content = content.replace(panel_placeholder_url, panel_url)
                     request_trace.persist_details = True
 
-                response.content = smart_str(content)
+                response.content = smart_bytes(content)
                 if response.get('Content-Length', None):
                     response['Content-Length'] = len(response.content)
         return response
