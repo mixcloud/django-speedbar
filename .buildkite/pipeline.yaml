@@ -1,0 +1,12 @@
+steps:
+  - label: ":python: Tests"
+    timeout_in_minutes: 3
+    commands:
+      - "pip install tox"
+      - "tox"
+    retry:
+      automatic:
+        - exit_status: -1  # Agent was lost
+          limit: 2
+        - exit_status: 255 # Forced agent shutdown
+          limit: 2

@@ -2,8 +2,7 @@
 django-speedbar - Page performance profiling for django
 =======================================================
 
-.. image:: https://codeship.com/projects/72818310-a428-0133-4c94-120ced3a4ed3/status?branch=master
-   :target: https://codeship.com/projects/129380
+.. image:: https://badge.buildkite.com/cabd32be588051612ca05cc8aecd794fa0e333503119dc52d4.svg
 
 .. image:: https://github.com/theospears/django-speedbar/raw/master/docs/images/chrome-speedtracer.png
 
